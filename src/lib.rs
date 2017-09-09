@@ -5,7 +5,10 @@ pub struct Parser {
 
 impl Parser {
     fn new(buffer: &str) -> Parser {
-        Parser { buffer, offset: 0 }
+        Parser {
+            buffer: String::from(buffer),
+            offset: 0,
+        }
     }
 }
 
