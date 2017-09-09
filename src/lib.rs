@@ -23,14 +23,22 @@ impl Parser {
             .bytes()
             .skip(self.offset)
             .position(|ch| !ch.is_ascii_whitespace())
+            .map(|n| n + self.offset)
             .unwrap_or(self.buffer.len())
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+
     #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
+    fn test() {
+        let mut p = Parser::new("  abc");
+        p.skip_whitespaces();
+        assert_eq!(p.offset, 2);
+
+        p.skip_whitespaces();
+        assert_eq!(p.offset, 2);
     }
 }
