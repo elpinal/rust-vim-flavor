@@ -1,3 +1,5 @@
+#![warn(missing_docs)]
+
 pub struct Parser {
     buffer: String,
     offset: usize,
