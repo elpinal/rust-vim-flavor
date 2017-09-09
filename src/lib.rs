@@ -1,3 +1,14 @@
+pub struct Parser {
+    buffer: String,
+    offset: usize,
+}
+
+impl Parser {
+    fn new(buffer: &str) -> Parser {
+        Parser { buffer, offset: 0 }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
