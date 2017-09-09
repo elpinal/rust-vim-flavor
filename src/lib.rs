@@ -1,5 +1,7 @@
+//! A manager of Vim plugins.
 #![warn(missing_docs)]
 
+/// A parser which parses VimFlavor file.
 pub struct Parser {
     buffer: String,
     offset: usize,
