@@ -4,6 +4,7 @@
 
 use std::ascii::AsciiExt;
 use std::str::Bytes;
+use std::string::FromUtf8Error;
 
 /// A parser which parses VimFlavor file.
 pub struct Parser<'a> {
@@ -46,8 +47,23 @@ impl<'a> Parser<'a> {
         self.next().and_then(|b| match b {
             b'#' => Some(Token::Hash),
             b' ' => self.next_token(),
+            b if b.is_ascii_alphabetic() => self.read_ident(b).ok(),
             _ => Some(Token::Illegal),
         })
+    }
+
+    fn read_ident(&mut self, b: u8) -> Result<Token, FromUtf8Error> {
+        let mut vec = Vec::new();
+        let mut c = Some(b);
+        while let Some(b) = c {
+            if b.is_ascii_alphabetic() {
+                vec.push(b);
+                c = self.next();
+            } else {
+                break;
+            }
+        }
+        String::from_utf8(vec).map(Token::Ident)
     }
 }
 
@@ -55,6 +71,7 @@ impl<'a> Parser<'a> {
 enum Token {
     Illegal,
     Hash,
+    Ident(String),
 }
 
 #[cfg(test)]
@@ -117,5 +134,21 @@ mod tests {
 
         assert_eq!(p.next_token(), None);
         assert_eq!(p.offset, 6);
+
+        let mut p = Parser::new("abc#de f");
+        assert_eq!(p.next_token(), Some(Token::Ident(String::from("abc"))));
+        assert_eq!(p.offset, 3);
+
+        assert_eq!(p.next_token(), Some(Token::Hash));
+        assert_eq!(p.offset, 4);
+
+        assert_eq!(p.next_token(), Some(Token::Ident(String::from("de"))));
+        assert_eq!(p.offset, 6);
+
+        assert_eq!(p.next_token(), Some(Token::Ident(String::from("f"))));
+        assert_eq!(p.offset, 8);
+
+        assert_eq!(p.next_token(), None);
+        assert_eq!(p.offset, 8);
     }
 }
