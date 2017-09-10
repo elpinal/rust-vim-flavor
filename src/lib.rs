@@ -86,6 +86,14 @@ impl<'a> Parser<'a> {
         }
         String::from_utf8(vec).map(Token::Ident)
     }
+
+    fn parse(&mut self) -> Vec<Token> {
+        let mut vec = Vec::new();
+        while let Some(t) = self.next_token() {
+            vec.push(t);
+        }
+        vec
+    }
 }
 
 #[derive(Debug, PartialEq)]
@@ -176,5 +184,16 @@ mod tests {
 
         assert_eq!(p.next_token(), None);
         assert_eq!(p.offset, 8);
+    }
+
+    #[test]
+    fn test_parse() {
+        let mut p = Parser::new("## @ #abc#");
+        use Token::*;
+        assert_eq!(
+            p.parse(),
+            vec![Hash, Hash, Illegal, Hash, Ident("abc".to_owned()), Hash]
+        );
+        assert_eq!(p.offset, 10);
     }
 }
