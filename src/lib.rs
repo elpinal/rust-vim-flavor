@@ -62,6 +62,10 @@ impl<'a> Parser<'a> {
                 self.next();
                 Some(Token::Hash)
             }
+            b',' => {
+                self.next();
+                Some(Token::Comma)
+            }
             b' ' => {
                 self.next();
                 self.next_token()
@@ -123,6 +127,7 @@ enum Token {
     Hash,
     Ident(String),
     Str(String),
+    Comma,
 }
 
 #[cfg(test)]
@@ -207,14 +212,14 @@ mod tests {
         assert_eq!(p.next_token(), None);
         assert_eq!(p.offset, 8);
 
-        let mut p = Parser::new("#'aaa'#");
+        let mut p = Parser::new("#'aaa',");
         assert_eq!(p.next_token(), Some(Token::Hash));
         assert_eq!(p.offset, 1);
 
         assert_eq!(p.next_token(), Some(Token::Str(String::from("aaa"))));
         assert_eq!(p.offset, 6);
 
-        assert_eq!(p.next_token(), Some(Token::Hash));
+        assert_eq!(p.next_token(), Some(Token::Comma));
         assert_eq!(p.offset, 7);
     }
 
