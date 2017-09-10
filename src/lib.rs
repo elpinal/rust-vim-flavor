@@ -59,27 +59,17 @@ impl<'a> Parser<'a> {
     }
 
     fn next_token(&mut self) -> Result<Token, ParseError> {
-        self.byte.ok_or(ParseError::EOF).and_then(|b| match b {
-            b'#' => {
-                self.next();
-                Ok(Token::Hash)
+        self.byte.ok_or(ParseError::EOF).and_then(|b| {
+            if b.is_ascii_alphabetic() {
+                return self.read_ident();
             }
-            b',' => {
-                self.next();
-                Ok(Token::Comma)
-            }
-            b' ' => {
-                self.next();
-                self.next_token()
-            }
-            b if b.is_ascii_alphabetic() => self.read_ident(),
-            b'\'' => {
-                self.next();
-                self.read_string()
-            }
-            _ => {
-                self.next();
-                Ok(Token::Illegal)
+            self.next();
+            match b {
+                b'#' => Ok(Token::Hash),
+                b',' => Ok(Token::Comma),
+                b' ' => self.next_token(),
+                b'\'' => self.read_string(),
+                _ => Ok(Token::Illegal),
             }
         })
     }
