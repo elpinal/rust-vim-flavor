@@ -41,6 +41,19 @@ impl<'a> Parser<'a> {
         }
         n
     }
+
+    fn next_token(&mut self) -> Option<Token> {
+        self.next().map(|b| match b {
+            b'#' => Token::Hash,
+            _ => Token::Illegal,
+        })
+    }
+}
+
+#[derive(Debug, PartialEq)]
+enum Token {
+    Illegal,
+    Hash,
 }
 
 #[cfg(test)]
@@ -83,6 +96,22 @@ mod tests {
         assert_eq!(p.offset, 3);
 
         assert_eq!(p.next(), None);
+        assert_eq!(p.offset, 3);
+    }
+
+    #[test]
+    fn test_next_token() {
+        let mut p = Parser::new("##@");
+        assert_eq!(p.next_token(), Some(Token::Hash));
+        assert_eq!(p.offset, 1);
+
+        assert_eq!(p.next_token(), Some(Token::Hash));
+        assert_eq!(p.offset, 2);
+
+        assert_eq!(p.next_token(), Some(Token::Illegal));
+        assert_eq!(p.offset, 3);
+
+        assert_eq!(p.next_token(), None);
         assert_eq!(p.offset, 3);
     }
 }
