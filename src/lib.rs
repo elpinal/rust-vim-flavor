@@ -1,5 +1,6 @@
 //! A manager of Vim plugins.
 #![warn(missing_docs)]
+#![allow(unused)]
 #![feature(ascii_ctype)]
 
 use std::ascii::AsciiExt;
