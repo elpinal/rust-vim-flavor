@@ -84,7 +84,11 @@ impl<'a> Parser<'a> {
                 break;
             }
         }
-        Ok(String::from_utf8(vec).map(Token::Ident)?)
+        let s = String::from_utf8(vec)?;
+        if s == "flavor" {
+            return Ok(Token::Flavor);
+        }
+        Ok(Token::Ident(s))
     }
 
     fn read_string(&mut self) -> Result<Token, ParseError> {
@@ -120,6 +124,7 @@ enum Token {
     Ident(String),
     Str(String),
     Comma,
+    Flavor,
 }
 
 #[derive(Debug, PartialEq)]
@@ -230,12 +235,20 @@ mod tests {
 
     #[test]
     fn test_parse() {
-        let mut p = Parser::new("## @ #abc#");
+        let mut p = Parser::new("## @ #abc#flavor");
         use Token::*;
         assert_eq!(
             p.parse(),
-            vec![Hash, Hash, Illegal, Hash, Ident("abc".to_owned()), Hash]
+            vec![
+                Hash,
+                Hash,
+                Illegal,
+                Hash,
+                Ident("abc".to_owned()),
+                Hash,
+                Flavor,
+            ]
         );
-        assert_eq!(p.offset, 10);
+        assert_eq!(p.offset, 16);
     }
 }
