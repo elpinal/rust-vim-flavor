@@ -33,6 +33,14 @@ impl<'a> Parser<'a> {
             .map(|n| n + self.offset + 1)
             .unwrap_or(m)
     }
+
+    fn next(&mut self) -> Option<u8> {
+        let n = self.buffer.next();
+        if n.is_some() {
+            self.offset += 1;
+        }
+        n
+    }
 }
 
 #[cfg(test)]
@@ -60,5 +68,21 @@ mod tests {
 
         p.skip_to_next_line();
         assert_eq!(p.offset, 7);
+    }
+
+    #[test]
+    fn test_next() {
+        let mut p = Parser::new(" ab");
+        assert_eq!(p.next(), Some(b' '));
+        assert_eq!(p.offset, 1);
+
+        assert_eq!(p.next(), Some(b'a'));
+        assert_eq!(p.offset, 2);
+
+        assert_eq!(p.next(), Some(b'b'));
+        assert_eq!(p.offset, 3);
+
+        assert_eq!(p.next(), None);
+        assert_eq!(p.offset, 3);
     }
 }
