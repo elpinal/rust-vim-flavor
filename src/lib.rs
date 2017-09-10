@@ -6,6 +6,7 @@
 use std::ascii::AsciiExt;
 use std::iter::Enumerate;
 use std::str::Bytes;
+use std::str::Utf8Error;
 use std::string::FromUtf8Error;
 
 /// A parser which parses VimFlavor file.
@@ -57,33 +58,33 @@ impl<'a> Parser<'a> {
         self.byte = n.map(|t| t.1);
     }
 
-    fn next_token(&mut self) -> Option<Token> {
-        self.byte.and_then(|b| match b {
+    fn next_token(&mut self) -> Result<Token, ParseError> {
+        self.byte.ok_or(ParseError::EOF).and_then(|b| match b {
             b'#' => {
                 self.next();
-                Some(Token::Hash)
+                Ok(Token::Hash)
             }
             b',' => {
                 self.next();
-                Some(Token::Comma)
+                Ok(Token::Comma)
             }
             b' ' => {
                 self.next();
                 self.next_token()
             }
-            b if b.is_ascii_alphabetic() => self.read_ident().ok(),
+            b if b.is_ascii_alphabetic() => self.read_ident(),
             b'\'' => {
                 self.next();
                 self.read_string()
             }
             _ => {
                 self.next();
-                Some(Token::Illegal)
+                Ok(Token::Illegal)
             }
         })
     }
 
-    fn read_ident(&mut self) -> Result<Token, FromUtf8Error> {
+    fn read_ident(&mut self) -> Result<Token, ParseError> {
         let mut vec = Vec::new();
         while let Some(b) = self.byte {
             if b.is_ascii_alphabetic() {
@@ -93,10 +94,10 @@ impl<'a> Parser<'a> {
                 break;
             }
         }
-        String::from_utf8(vec).map(Token::Ident)
+        Ok(String::from_utf8(vec).map(Token::Ident)?)
     }
 
-    fn read_string(&mut self) -> Option<Token> {
+    fn read_string(&mut self) -> Result<Token, ParseError> {
         let mut vec = Vec::new();
         while let Some(b) = self.byte {
             if b != b'\'' {
@@ -107,15 +108,15 @@ impl<'a> Parser<'a> {
             }
         }
         if self.byte != Some(b'\'') {
-            return None;
+            return Err(ParseError::Terminate);
         }
         self.next();
-        String::from_utf8(vec).map(Token::Str).ok()
+        Ok(String::from_utf8(vec).map(Token::Str)?)
     }
 
     fn parse(&mut self) -> Vec<Token> {
         let mut vec = Vec::new();
-        while let Some(t) = self.next_token() {
+        while let Some(t) = self.next_token().ok() {
             vec.push(t);
         }
         vec
@@ -129,6 +130,19 @@ enum Token {
     Ident(String),
     Str(String),
     Comma,
+}
+
+#[derive(Debug, PartialEq)]
+enum ParseError {
+    Utf8(Utf8Error),
+    Terminate,
+    EOF,
+}
+
+impl From<FromUtf8Error> for ParseError {
+    fn from(err: FromUtf8Error) -> ParseError {
+        ParseError::Utf8(err.utf8_error())
+    }
 }
 
 #[cfg(test)]
@@ -182,45 +196,45 @@ mod tests {
     #[test]
     fn test_next_token() {
         let mut p = Parser::new("## @ #");
-        assert_eq!(p.next_token(), Some(Token::Hash));
+        assert_eq!(p.next_token(), Ok(Token::Hash));
         assert_eq!(p.offset, 1);
 
-        assert_eq!(p.next_token(), Some(Token::Hash));
+        assert_eq!(p.next_token(), Ok(Token::Hash));
         assert_eq!(p.offset, 2);
 
-        assert_eq!(p.next_token(), Some(Token::Illegal));
+        assert_eq!(p.next_token(), Ok(Token::Illegal));
         assert_eq!(p.offset, 4);
 
-        assert_eq!(p.next_token(), Some(Token::Hash));
+        assert_eq!(p.next_token(), Ok(Token::Hash));
         assert_eq!(p.offset, 6);
 
-        assert_eq!(p.next_token(), None);
+        assert_eq!(p.next_token().err(), Some(ParseError::EOF));
         assert_eq!(p.offset, 6);
 
         let mut p = Parser::new("abc#de f");
-        assert_eq!(p.next_token(), Some(Token::Ident(String::from("abc"))));
+        assert_eq!(p.next_token(), Ok(Token::Ident(String::from("abc"))));
         assert_eq!(p.offset, 3);
 
-        assert_eq!(p.next_token(), Some(Token::Hash));
+        assert_eq!(p.next_token(), Ok(Token::Hash));
         assert_eq!(p.offset, 4);
 
-        assert_eq!(p.next_token(), Some(Token::Ident(String::from("de"))));
+        assert_eq!(p.next_token(), Ok(Token::Ident(String::from("de"))));
         assert_eq!(p.offset, 6);
 
-        assert_eq!(p.next_token(), Some(Token::Ident(String::from("f"))));
+        assert_eq!(p.next_token(), Ok(Token::Ident(String::from("f"))));
         assert_eq!(p.offset, 8);
 
-        assert_eq!(p.next_token(), None);
+        assert_eq!(p.next_token().err(), Some(ParseError::EOF));
         assert_eq!(p.offset, 8);
 
         let mut p = Parser::new("#'aaa',");
-        assert_eq!(p.next_token(), Some(Token::Hash));
+        assert_eq!(p.next_token(), Ok(Token::Hash));
         assert_eq!(p.offset, 1);
 
-        assert_eq!(p.next_token(), Some(Token::Str(String::from("aaa"))));
+        assert_eq!(p.next_token(), Ok(Token::Str(String::from("aaa"))));
         assert_eq!(p.offset, 6);
 
-        assert_eq!(p.next_token(), Some(Token::Comma));
+        assert_eq!(p.next_token(), Ok(Token::Comma));
         assert_eq!(p.offset, 7);
     }
 
