@@ -67,6 +67,10 @@ impl<'a> Parser<'a> {
                 self.next_token()
             }
             b if b.is_ascii_alphabetic() => self.read_ident().ok(),
+            b'\'' => {
+                self.next();
+                self.read_string()
+            }
             _ => {
                 self.next();
                 Some(Token::Illegal)
@@ -87,6 +91,23 @@ impl<'a> Parser<'a> {
         String::from_utf8(vec).map(Token::Ident)
     }
 
+    fn read_string(&mut self) -> Option<Token> {
+        let mut vec = Vec::new();
+        while let Some(b) = self.byte {
+            if b != b'\'' {
+                vec.push(b);
+                self.next();
+            } else {
+                break;
+            }
+        }
+        if self.byte != Some(b'\'') {
+            return None;
+        }
+        self.next();
+        String::from_utf8(vec).map(Token::Str).ok()
+    }
+
     fn parse(&mut self) -> Vec<Token> {
         let mut vec = Vec::new();
         while let Some(t) = self.next_token() {
@@ -101,6 +122,7 @@ enum Token {
     Illegal,
     Hash,
     Ident(String),
+    Str(String),
 }
 
 #[cfg(test)]
@@ -184,6 +206,16 @@ mod tests {
 
         assert_eq!(p.next_token(), None);
         assert_eq!(p.offset, 8);
+
+        let mut p = Parser::new("#'aaa'#");
+        assert_eq!(p.next_token(), Some(Token::Hash));
+        assert_eq!(p.offset, 1);
+
+        assert_eq!(p.next_token(), Some(Token::Str(String::from("aaa"))));
+        assert_eq!(p.offset, 6);
+
+        assert_eq!(p.next_token(), Some(Token::Hash));
+        assert_eq!(p.offset, 7);
     }
 
     #[test]
