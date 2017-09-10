@@ -3,62 +3,83 @@
 #![feature(ascii_ctype)]
 
 use std::ascii::AsciiExt;
+use std::iter::Enumerate;
 use std::str::Bytes;
 use std::string::FromUtf8Error;
 
 /// A parser which parses VimFlavor file.
 pub struct Parser<'a> {
-    buffer: Bytes<'a>,
+    buffer: Enumerate<Bytes<'a>>,
     offset: usize,
+    byte: Option<u8>,
 }
 
 impl<'a> Parser<'a> {
     fn new(buffer: &str) -> Parser {
-        Parser {
-            buffer: buffer.bytes(),
+        let mut p = Parser {
+            buffer: buffer.bytes().enumerate(),
             offset: 0,
-        }
+            byte: None,
+        };
+        let n = p.buffer.next();
+        p.byte = n.map(|t| t.1);
+        p
     }
 
     fn skip_whitespaces(&mut self) {
-        self.offset = self.buffer
-            .position(|ch| !ch.is_ascii_whitespace())
-            .map(|n| n + self.offset)
-            .unwrap_or(self.buffer.len())
+        if self.byte.map(|b| !b.is_ascii_whitespace()) == Some(true) {
+            return;
+        }
+        if let Some((n, ch)) = self.buffer.find(|&(_, ch)| !ch.is_ascii_whitespace()) {
+            self.offset = n;
+            self.byte = Some(ch);
+        } else {
+            self.offset = self.buffer.len();
+            self.byte = None;
+        }
     }
 
     fn skip_to_next_line(&mut self) {
         let m = self.offset + self.buffer.len();
-        self.offset = self.buffer
-            .position(|ch| ch == b'\n')
-            .map(|n| n + self.offset + 1)
-            .unwrap_or(m)
+        if let Some((n, ch)) = self.buffer.find(|&(_, ch)| ch == b'\n') {
+            self.offset = n + 1;
+            self.byte = Some(ch);
+        } else {
+            self.offset = m;
+            self.byte = None;
+        }
     }
 
-    fn next(&mut self) -> Option<u8> {
+    fn next(&mut self) {
         let n = self.buffer.next();
-        if n.is_some() {
-            self.offset += 1;
-        }
-        n
+        self.offset += 1;
+        self.byte = n.map(|t| t.1);
     }
 
     fn next_token(&mut self) -> Option<Token> {
-        self.next().and_then(|b| match b {
-            b'#' => Some(Token::Hash),
-            b' ' => self.next_token(),
-            b if b.is_ascii_alphabetic() => self.read_ident(b).ok(),
-            _ => Some(Token::Illegal),
+        self.byte.and_then(|b| match b {
+            b'#' => {
+                self.next();
+                Some(Token::Hash)
+            }
+            b' ' => {
+                self.next();
+                self.next_token()
+            }
+            b if b.is_ascii_alphabetic() => self.read_ident().ok(),
+            _ => {
+                self.next();
+                Some(Token::Illegal)
+            }
         })
     }
 
-    fn read_ident(&mut self, b: u8) -> Result<Token, FromUtf8Error> {
+    fn read_ident(&mut self) -> Result<Token, FromUtf8Error> {
         let mut vec = Vec::new();
-        let mut c = Some(b);
-        while let Some(b) = c {
+        while let Some(b) = self.byte {
             if b.is_ascii_alphabetic() {
                 vec.push(b);
-                c = self.next();
+                self.next();
             } else {
                 break;
             }
@@ -83,8 +104,10 @@ mod tests {
         let mut p = Parser::new("  abc");
         p.skip_whitespaces();
         assert_eq!(p.offset, 2);
+        assert_eq!(p.byte, Some(b'a'));
 
         p.skip_whitespaces();
+        assert_eq!(p.byte, Some(b'a'));
         assert_eq!(p.offset, 2);
     }
 
@@ -104,16 +127,19 @@ mod tests {
     #[test]
     fn test_next() {
         let mut p = Parser::new(" ab");
-        assert_eq!(p.next(), Some(b' '));
+        assert_eq!(p.byte, Some(b' '));
+        assert_eq!(p.offset, 0);
+
+        p.next();
+        assert_eq!(p.byte, Some(b'a'));
         assert_eq!(p.offset, 1);
 
-        assert_eq!(p.next(), Some(b'a'));
+        p.next();
+        assert_eq!(p.byte, Some(b'b'));
         assert_eq!(p.offset, 2);
 
-        assert_eq!(p.next(), Some(b'b'));
-        assert_eq!(p.offset, 3);
-
-        assert_eq!(p.next(), None);
+        p.next();
+        assert_eq!(p.byte, None);
         assert_eq!(p.offset, 3);
     }
 
