@@ -18,7 +18,7 @@ fn get_root() -> Option<PathBuf> {
         return None;
     }
     let mut p = p.unwrap();
-    p.push(".vim-flavor");
+    p.push(".rust-vim-flavor");
     p.push("repos");
     Some(p)
 }
