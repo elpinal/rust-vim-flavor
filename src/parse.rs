@@ -133,7 +133,7 @@ enum Token {
 
 #[derive(Debug, PartialEq)]
 pub struct Flavor {
-    repo: String,
+    pub repo: String,
 }
 
 #[derive(Debug, PartialEq)]
