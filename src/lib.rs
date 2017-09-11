@@ -108,16 +108,25 @@ impl<'a> Parser<'a> {
         Ok(String::from_utf8(vec).map(Token::Str)?)
     }
 
-    fn parse(&mut self) -> Vec<Flavor> {
+    fn parse(&mut self) -> Result<Vec<Flavor>, ParseError> {
         let mut vec = Vec::new();
         while let Some(t) = self.next_token().ok() {
             match t {
                 Token::Hash => self.skip_to_next_line(),
-                Token::Flavor => vec.push(Flavor { repo: self.next_token().unwrap() }),
+                Token::Flavor => {
+                    let t = self.next_token()?;
+                    match t {
+                        Token::Str(_) => (),
+                        _ => {
+                            return Err(ParseError::TypeMismatch);
+                        }
+                    }
+                    vec.push(Flavor { repo: t });
+                }
                 _ => (),
             }
         }
-        vec
+        Ok(vec)
     }
 }
 
@@ -141,6 +150,7 @@ enum ParseError {
     Utf8(Utf8Error),
     Terminate,
     EOF,
+    TypeMismatch,
 }
 
 impl From<FromUtf8Error> for ParseError {
@@ -249,8 +259,12 @@ mod tests {
         let mut p = Parser::new(s);
         assert_eq!(
             p.parse(),
-            vec![Flavor { repo: Token::Str("repo".to_owned()) }]
+            Ok(vec![Flavor { repo: Token::Str("repo".to_owned()) }])
         );
         assert_eq!(p.offset, s.len() + 1);
+
+        let s = "flavor flavor";
+        let mut p = Parser::new(s);
+        assert!(p.parse().is_err());
     }
 }
