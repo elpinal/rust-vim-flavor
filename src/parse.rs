@@ -38,13 +38,12 @@ impl<'a> Parser<'a> {
 
     fn skip_to_next_line(&mut self) {
         let m = self.offset + self.buffer.len();
-        if let Some((n, ch)) = self.buffer.find(|&(_, ch)| ch == b'\n') {
-            self.offset = n + 1;
-            self.byte = Some(ch);
-        } else {
-            self.offset = m;
-            self.byte = None;
-        }
+        let (n, ch) = self.buffer
+            .find(|&(_, ch)| ch == b'\n')
+            .map(|(n, ch)| (n + 1, Some(ch)))
+            .unwrap_or((m, None));
+        self.offset = n;
+        self.byte = ch;
     }
 
     fn next(&mut self) {
