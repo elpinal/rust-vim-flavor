@@ -8,6 +8,8 @@ mod parse;
 
 use parse::{Parser, ParseError};
 
+use std::process::Command;
+
 fn parse(s: &str) -> Result<Vec<String>, ParseError> {
     let mut p = Parser::new(s);
     let fs = p.parse()?;
@@ -19,6 +21,16 @@ fn parse(s: &str) -> Result<Vec<String>, ParseError> {
         _ => f.repo.to_owned(),
     });
     Ok(rs.collect())
+}
+
+fn install(s: &str) -> Result<(), ParseError> {
+    for r in parse(s)? {
+        Command::new("git")
+            .args(&["--depth", "1", &r])
+            .spawn()
+            .expect("git command failed");
+    }
+    Ok(())
 }
 
 mod tests {
