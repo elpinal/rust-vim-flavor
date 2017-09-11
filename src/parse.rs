@@ -111,12 +111,11 @@ impl<'a> Parser<'a> {
                 Token::Flavor => {
                     let t = self.next_token()?;
                     match t {
-                        Token::Str(_) => (),
+                        Token::Str(s) => vec.push(Flavor { repo: s }),
                         _ => {
                             return Err(ParseError::TypeMismatch);
                         }
                     }
-                    vec.push(Flavor { repo: t });
                 }
                 _ => (),
             }
@@ -137,7 +136,7 @@ enum Token {
 
 #[derive(Debug, PartialEq)]
 pub struct Flavor {
-    repo: Token,
+    repo: String,
 }
 
 #[derive(Debug, PartialEq)]
@@ -252,10 +251,7 @@ mod tests {
         let s = "# comment of flavor file\n\
                  flavor 'repo'";
         let mut p = Parser::new(s);
-        assert_eq!(
-            p.parse(),
-            Ok(vec![Flavor { repo: Token::Str("repo".to_owned()) }])
-        );
+        assert_eq!(p.parse(), Ok(vec![Flavor { repo: "repo".to_owned() }]));
         assert_eq!(p.offset, s.len() + 1);
 
         let s = "flavor flavor";
