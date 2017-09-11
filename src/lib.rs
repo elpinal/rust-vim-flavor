@@ -19,3 +19,17 @@ fn parse(s: &str) -> Result<Vec<String>, ParseError> {
     });
     Ok(rs.collect())
 }
+
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse() {
+        let s = "flavor 'vspec'";
+        let rs = parse(s);
+        assert_eq!(
+            rs,
+            Ok(vec!["git://github.com/vim-scripts/vspec.git".to_owned()])
+        );
+    }
+}
