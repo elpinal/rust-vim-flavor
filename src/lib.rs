@@ -108,10 +108,14 @@ impl<'a> Parser<'a> {
         Ok(String::from_utf8(vec).map(Token::Str)?)
     }
 
-    fn parse(&mut self) -> Vec<Token> {
+    fn parse(&mut self) -> Vec<Flavor> {
         let mut vec = Vec::new();
         while let Some(t) = self.next_token().ok() {
-            vec.push(t);
+            match t {
+                Token::Hash => self.skip_to_next_line(),
+                Token::Flavor => vec.push(Flavor { repo: self.next_token().unwrap() }),
+                _ => (),
+            }
         }
         vec
     }
@@ -125,6 +129,11 @@ enum Token {
     Str(String),
     Comma,
     Flavor,
+}
+
+#[derive(Debug, PartialEq)]
+struct Flavor {
+    repo: Token,
 }
 
 #[derive(Debug, PartialEq)]
@@ -235,20 +244,13 @@ mod tests {
 
     #[test]
     fn test_parse() {
-        let mut p = Parser::new("## @ #abc#flavor");
-        use Token::*;
+        let s = "# comment of flavor file\n\
+                 flavor 'repo'";
+        let mut p = Parser::new(s);
         assert_eq!(
             p.parse(),
-            vec![
-                Hash,
-                Hash,
-                Illegal,
-                Hash,
-                Ident("abc".to_owned()),
-                Hash,
-                Flavor,
-            ]
+            vec![Flavor { repo: Token::Str("repo".to_owned()) }]
         );
-        assert_eq!(p.offset, 16);
+        assert_eq!(p.offset, s.len() + 1);
     }
 }
