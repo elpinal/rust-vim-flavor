@@ -10,8 +10,9 @@ use parse::{Parser, ParseError};
 
 use std::process::Command;
 use std::env;
+use std::path::PathBuf;
 
-fn get_root() -> Option<String> {
+fn get_root() -> Option<PathBuf> {
     let p = env::home_dir();
     if p.is_none() {
         return None;
@@ -19,7 +20,7 @@ fn get_root() -> Option<String> {
     let mut p = p.unwrap();
     p.push(".vim-flavor");
     p.push("repos");
-    p.to_str().map(|s| s.to_owned())
+    Some(p)
 }
 
 fn parse(s: &str) -> Result<Vec<String>, ParseError> {
@@ -36,9 +37,11 @@ fn parse(s: &str) -> Result<Vec<String>, ParseError> {
 }
 
 fn install(s: &str) -> Result<(), ParseError> {
+    let root = get_root().unwrap();
     for r in parse(s)? {
+        let n = r.split('/').last().unwrap();
         Command::new("git")
-            .args(&["--depth", "1", &r])
+            .args(&["--depth", "1", &r, root.join(n).to_str().unwrap()])
             .spawn()
             .expect("git command failed");
     }
