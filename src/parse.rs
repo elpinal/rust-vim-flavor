@@ -58,10 +58,10 @@ impl<'a> Parser<'a> {
             }
             self.next();
             match b {
-                b'#' => Ok(Token::Hash),
-                b',' => Ok(Token::Comma),
                 b' ' => self.next_token(),
                 b'\'' => self.read_string(),
+                b'#' => Ok(Token::Hash),
+                b',' => Ok(Token::Comma),
                 _ => Ok(Token::Illegal),
             }
         })
