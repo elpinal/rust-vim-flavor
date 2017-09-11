@@ -110,9 +110,8 @@ impl<'a> Parser<'a> {
                     let t = self.next_token()?;
                     match t {
                         Token::Str(s) => vec.push(Flavor { repo: s }),
-                        _ => {
-                            return Err(ParseError::TypeMismatch);
-                        }
+                        _ => return Err(ParseError::TypeMismatch),
+
                     }
                 }
                 _ => (),
