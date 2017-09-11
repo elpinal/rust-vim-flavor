@@ -27,13 +27,12 @@ impl<'a> Parser<'a> {
         if self.byte.map(|b| !b.is_ascii_whitespace()) == Some(true) {
             return;
         }
-        if let Some((n, ch)) = self.buffer.find(|&(_, ch)| !ch.is_ascii_whitespace()) {
-            self.offset = n;
-            self.byte = Some(ch);
-        } else {
-            self.offset = self.buffer.len();
-            self.byte = None;
-        }
+        let (n, ch) = self.buffer
+            .find(|&(_, ch)| !ch.is_ascii_whitespace())
+            .map(|(n, ch)| (n, Some(ch)))
+            .unwrap_or((self.buffer.len(), None));
+        self.offset = n;
+        self.byte = ch;
     }
 
     fn skip_to_next_line(&mut self) {
