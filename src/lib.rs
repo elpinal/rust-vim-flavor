@@ -9,6 +9,18 @@ mod parse;
 use parse::{Parser, ParseError};
 
 use std::process::Command;
+use std::env;
+
+fn get_root() -> Option<String> {
+    let p = env::home_dir();
+    if p.is_none() {
+        return None;
+    }
+    let mut p = p.unwrap();
+    p.push(".vim-flavor");
+    p.push("repos");
+    p.to_str().map(|s| s.to_owned())
+}
 
 fn parse(s: &str) -> Result<Vec<String>, ParseError> {
     let mut p = Parser::new(s);
