@@ -15,6 +15,7 @@ fn parse(s: &str) -> Result<Vec<String>, ParseError> {
         .split('/')
         .collect::<Vec<&str>>() {
         [vs] => format!("git://github.com/vim-scripts/{}.git", vs),
+        [u, r] => format!("git://github.com/{}/{}.git", u, r),
         _ => f.repo.to_owned(),
     });
     Ok(rs.collect())
@@ -31,5 +32,16 @@ mod tests {
             rs,
             Ok(vec!["git://github.com/vim-scripts/vspec.git".to_owned()])
         );
+
+        let s = "flavor 'elpinal/vim-goyacc'";
+        let rs = parse(s);
+        assert_eq!(
+            rs,
+            Ok(vec!["git://github.com/elpinal/vim-goyacc.git".to_owned()])
+        );
+
+        let s = "flavor 'https://github.com/elpinal/vim-goyacc'";
+        let rs = parse(s);
+        assert_eq!(rs, Ok(vec![s.to_owned()]));
     }
 }
