@@ -10,6 +10,7 @@ use parse::{Parser, ParseError};
 
 use std::process::Command;
 use std::env;
+use std::io;
 use std::path::PathBuf;
 
 fn get_root() -> Option<PathBuf> {
@@ -36,16 +37,33 @@ fn parse(s: &str) -> Result<Vec<String>, ParseError> {
     Ok(rs.collect())
 }
 
-fn install(s: &str) -> Result<(), ParseError> {
-    let root = get_root().unwrap();
+fn install(s: &str) -> Result<(), InstallError> {
+    let root = get_root().ok_or(InstallError::GetHome)?;
     for r in parse(s)? {
         let n = r.split('/').last().unwrap();
         Command::new("git")
             .args(&["--depth", "1", &r, root.join(n).to_str().unwrap()])
-            .spawn()
-            .expect("git command failed");
+            .spawn()?;
     }
     Ok(())
+}
+
+enum InstallError {
+    GetHome,
+    Git(io::Error),
+    Parse(ParseError),
+}
+
+impl From<ParseError> for InstallError {
+    fn from(e: ParseError) -> InstallError {
+        InstallError::Parse(e)
+    }
+}
+
+impl From<io::Error> for InstallError {
+    fn from(e: io::Error) -> InstallError {
+        InstallError::Git(e)
+    }
 }
 
 mod tests {
