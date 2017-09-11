@@ -42,6 +42,9 @@ mod tests {
 
         let s = "flavor 'https://github.com/elpinal/vim-goyacc'";
         let rs = parse(s);
-        assert_eq!(rs, Ok(vec![s.to_owned()]));
+        assert_eq!(
+            rs,
+            Ok(vec!["https://github.com/elpinal/vim-goyacc".to_owned()])
+        );
     }
 }
