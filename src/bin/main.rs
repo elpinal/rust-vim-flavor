@@ -4,12 +4,12 @@ use std::env;
 use std::fmt;
 use std::fs::File;
 use std::io;
-use std::io::Read;
+use std::io::{Read, Write};
 
 fn main() {
     let r = run();
     if let Some(e) = r.err() {
-        println!("{}", e);
+        writeln!(io::stderr(), "{}", e).unwrap();
         std::process::exit(1);
     }
 }
