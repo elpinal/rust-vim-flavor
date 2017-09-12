@@ -23,11 +23,6 @@ fn get_root() -> Option<PathBuf> {
     })
 }
 
-fn parse(s: &str) -> Result<Vec<Flavor>, ParseError> {
-    let mut p = Parser::new(s);
-    p.parse()
-}
-
 fn complete(s: &str) -> String {
     match *s.split('/').collect::<Vec<&str>>() {
         [vs] => format!("git://github.com/vim-scripts/{}.git", vs),
@@ -39,7 +34,7 @@ fn complete(s: &str) -> String {
 /// Parses content of the flavor file and installs plugins which are described in it.
 pub fn install(s: &str) -> Result<(), InstallError> {
     let root = get_root().ok_or(InstallError::GetHome)?;
-    for f in parse(s)? {
+    for f in Parser::new(s).parse()? {
         let r = complete(&f.repo);
         let n = f.repo.replace(
             |ch: char| !ch.is_alphanumeric() && ch != '-' && ch != '_' && ch != '.',
