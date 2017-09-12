@@ -9,6 +9,7 @@ mod parse;
 use parse::{Parser, ParseError};
 
 use std::process::Command;
+use std::process::ExitStatus;
 use std::env;
 use std::io;
 use std::path::PathBuf;
@@ -41,9 +42,12 @@ pub fn install(s: &str) -> Result<(), InstallError> {
     let root = get_root().ok_or(InstallError::GetHome)?;
     for r in parse(s)? {
         let n = r.split('/').last().unwrap();
-        Command::new("git")
+        let status = Command::new("git")
             .args(&["--depth", "1", &r, root.join(n).to_str().unwrap()])
-            .spawn()?;
+            .status()?;
+        if !status.success() {
+            return Err(InstallError::Exit(status));
+        }
     }
     Ok(())
 }
@@ -53,6 +57,7 @@ pub enum InstallError {
     GetHome,
     Git(io::Error),
     Parse(ParseError),
+    Exit(ExitStatus),
 }
 
 impl From<ParseError> for InstallError {
