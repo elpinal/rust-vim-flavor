@@ -29,14 +29,16 @@ fn get_root() -> Option<PathBuf> {
 fn parse(s: &str) -> Result<Vec<String>, ParseError> {
     let mut p = Parser::new(s);
     let fs = p.parse()?;
-    let rs = fs.iter().map(|f| match *f.repo
-        .split('/')
-        .collect::<Vec<&str>>() {
+    let rs = fs.iter().map(|f| complete(&f.repo));
+    Ok(rs.collect())
+}
+
+fn complete(s: &str) -> String {
+    match *s.split('/').collect::<Vec<&str>>() {
         [vs] => format!("git://github.com/vim-scripts/{}.git", vs),
         [u, r] => format!("git://github.com/{}/{}.git", u, r),
-        _ => f.repo.to_owned(),
-    });
-    Ok(rs.collect())
+        _ => s.to_owned(),
+    }
 }
 
 /// Parses content of the flavor file and installs plugins which are described in it.
