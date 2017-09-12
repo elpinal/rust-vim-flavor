@@ -44,7 +44,10 @@ pub fn install(s: &str) -> Result<(), InstallError> {
     let root = get_root().ok_or(InstallError::GetHome)?;
     for f in parse(s)? {
         let r = complete(&f.repo);
-        let n = f.repo;
+        let n = f.repo.replace(
+            |ch: char| !ch.is_alphanumeric() && ch != '-' && ch != '_' && ch != '.',
+            "_",
+        );
         let d = root.join(n);
         if d.exists() {
             continue;
