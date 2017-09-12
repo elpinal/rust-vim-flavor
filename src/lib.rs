@@ -16,14 +16,11 @@ use std::process::Command;
 use std::process::ExitStatus;
 
 fn get_root() -> Option<PathBuf> {
-    let p = env::home_dir();
-    if p.is_none() {
-        return None;
-    }
-    let mut p = p.unwrap();
-    p.push(".vim");
-    p.push("rflavors");
-    Some(p)
+    env::home_dir().map(|mut p| {
+        p.push(".vim");
+        p.push("rflavors");
+        p
+    })
 }
 
 fn parse(s: &str) -> Result<Vec<Flavor>, ParseError> {
