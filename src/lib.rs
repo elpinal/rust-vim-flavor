@@ -37,7 +37,7 @@ fn parse(s: &str) -> Result<Vec<String>, ParseError> {
     Ok(rs.collect())
 }
 
-fn install(s: &str) -> Result<(), InstallError> {
+pub fn install(s: &str) -> Result<(), InstallError> {
     let root = get_root().ok_or(InstallError::GetHome)?;
     for r in parse(s)? {
         let n = r.split('/').last().unwrap();
@@ -48,7 +48,8 @@ fn install(s: &str) -> Result<(), InstallError> {
     Ok(())
 }
 
-enum InstallError {
+#[derive(Debug)]
+pub enum InstallError {
     GetHome,
     Git(io::Error),
     Parse(ParseError),
