@@ -44,7 +44,7 @@ pub fn install(s: &str) -> Result<(), InstallError> {
     let root = get_root().ok_or(InstallError::GetHome)?;
     for f in parse(s)? {
         let r = complete(&f.repo);
-        let n = r.split('/').last().unwrap();
+        let n = f.repo;
         let d = root.join(n);
         if d.exists() {
             continue;
