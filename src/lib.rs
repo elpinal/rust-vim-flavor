@@ -45,6 +45,9 @@ pub fn install(s: &str) -> Result<(), InstallError> {
     for r in parse(s)? {
         let n = r.split('/').last().unwrap();
         let d = root.join(n);
+        if d.exists() {
+            continue;
+        }
         let dest = d.to_str().expect(
             "failed to build destination path for 'git clone'",
         );
