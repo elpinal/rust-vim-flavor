@@ -10,6 +10,7 @@ fn main() {
     let r = run();
     if let Some(e) = r.err() {
         println!("{}", e);
+        std::process::exit(1);
     }
 }
 
