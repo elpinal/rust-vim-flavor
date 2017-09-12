@@ -44,10 +44,12 @@ pub fn install(s: &str) -> Result<(), InstallError> {
     let root = get_root().ok_or(InstallError::GetHome)?;
     for r in parse(s)? {
         let n = r.split('/').last().unwrap();
+        let d = root.join(n);
+        let dest = d.to_str().expect(
+            "failed to build destination path for 'git clone'",
+        );
         let status = Command::new("git")
-            .args(
-                &["clone", "--depth", "1", &r, root.join(n).to_str().unwrap()],
-            )
+            .args(&["clone", "--depth", "1", &r, dest])
             .status()?;
         if !status.success() {
             return Err(InstallError::Exit(status));
