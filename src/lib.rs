@@ -43,7 +43,7 @@ pub fn install(s: &str) -> Result<(), InstallError> {
     for r in parse(s)? {
         let n = r.split('/').last().unwrap();
         let status = Command::new("git")
-            .args(&["--depth", "1", &r, root.join(n).to_str().unwrap()])
+            .args(&["clone", "--depth", "1", &r, root.join(n).to_str().unwrap()])
             .status()?;
         if !status.success() {
             return Err(InstallError::Exit(status));
