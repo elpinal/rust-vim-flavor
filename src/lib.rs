@@ -6,7 +6,7 @@
 
 mod parse;
 
-use parse::{Parser, ParseError};
+use parse::{Parser, ParseError, Flavor};
 
 use std::process::Command;
 use std::process::ExitStatus;
@@ -26,11 +26,9 @@ fn get_root() -> Option<PathBuf> {
     Some(p)
 }
 
-fn parse(s: &str) -> Result<Vec<String>, ParseError> {
+fn parse(s: &str) -> Result<Vec<Flavor>, ParseError> {
     let mut p = Parser::new(s);
-    let fs = p.parse()?;
-    let rs = fs.iter().map(|f| complete(&f.repo));
-    Ok(rs.collect())
+    p.parse()
 }
 
 fn complete(s: &str) -> String {
@@ -44,7 +42,8 @@ fn complete(s: &str) -> String {
 /// Parses content of the flavor file and installs plugins which are described in it.
 pub fn install(s: &str) -> Result<(), InstallError> {
     let root = get_root().ok_or(InstallError::GetHome)?;
-    for r in parse(s)? {
+    for f in parse(s)? {
+        let r = complete(&f.repo);
         let n = r.split('/').last().unwrap();
         let d = root.join(n);
         if d.exists() {
@@ -103,26 +102,17 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_parse() {
-        let s = "flavor 'vspec'";
-        let rs = parse(s);
-        assert_eq!(
-            rs,
-            Ok(vec!["git://github.com/vim-scripts/vspec.git".to_owned()])
-        );
+    fn test_complete() {
+        let s = "vspec";
+        let rs = complete(s);
+        assert_eq!(rs, "git://github.com/vim-scripts/vspec.git".to_owned());
 
-        let s = "flavor 'elpinal/vim-goyacc'";
-        let rs = parse(s);
-        assert_eq!(
-            rs,
-            Ok(vec!["git://github.com/elpinal/vim-goyacc.git".to_owned()])
-        );
+        let s = "elpinal/vim-goyacc";
+        let rs = complete(s);
+        assert_eq!(rs, "git://github.com/elpinal/vim-goyacc.git".to_owned());
 
-        let s = "flavor 'https://github.com/elpinal/vim-goyacc'";
-        let rs = parse(s);
-        assert_eq!(
-            rs,
-            Ok(vec!["https://github.com/elpinal/vim-goyacc".to_owned()])
-        );
+        let s = "https://github.com/elpinal/vim-goyacc";
+        let rs = complete(s);
+        assert_eq!(rs, "https://github.com/elpinal/vim-goyacc".to_owned());
     }
 }
