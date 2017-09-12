@@ -11,6 +11,7 @@ use parse::{Parser, ParseError};
 use std::process::Command;
 use std::process::ExitStatus;
 use std::env;
+use std::fmt;
 use std::io;
 use std::path::PathBuf;
 
@@ -43,7 +44,9 @@ pub fn install(s: &str) -> Result<(), InstallError> {
     for r in parse(s)? {
         let n = r.split('/').last().unwrap();
         let status = Command::new("git")
-            .args(&["clone", "--depth", "1", &r, root.join(n).to_str().unwrap()])
+            .args(
+                &["clone", "--depth", "1", &r, root.join(n).to_str().unwrap()],
+            )
             .status()?;
         if !status.success() {
             return Err(InstallError::Exit(status));
@@ -58,6 +61,17 @@ pub enum InstallError {
     Git(io::Error),
     Parse(ParseError),
     Exit(ExitStatus),
+}
+
+impl fmt::Display for InstallError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            InstallError::GetHome => write!(f, "error while getting home path"),
+            InstallError::Git(ref e) => write!(f, "git failed: {}", e),
+            InstallError::Parse(ref e) => write!(f, "parse error: {}", e),
+            InstallError::Exit(status) => status.fmt(f),
+        }
+    }
 }
 
 impl From<ParseError> for InstallError {
