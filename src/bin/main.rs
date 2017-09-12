@@ -33,7 +33,7 @@ impl fmt::Display for CLIError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             CLIError::MissingArgument => write!(f, "1 argument needed"),
-            CLIError::FlavorFile(ref e) => write!(f, "io error: {}", e),
+            CLIError::FlavorFile(ref e) => write!(f, "IO error: {}", e),
             CLIError::Install(ref e) => write!(f, "{}", e),
         }
     }
