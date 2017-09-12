@@ -39,6 +39,7 @@ fn parse(s: &str) -> Result<Vec<String>, ParseError> {
     Ok(rs.collect())
 }
 
+/// Parses content of the flavor file and installs plugins which are described in it.
 pub fn install(s: &str) -> Result<(), InstallError> {
     let root = get_root().ok_or(InstallError::GetHome)?;
     for r in parse(s)? {
@@ -56,10 +57,15 @@ pub fn install(s: &str) -> Result<(), InstallError> {
 }
 
 #[derive(Debug)]
+/// Represents an error while installing plugins.
 pub enum InstallError {
+    /// Cannot get the home directory.
     GetHome,
+    /// Error when executing the 'git' command.
     Git(io::Error),
+    /// Given Flavor file cannot be parsed successfully.
     Parse(ParseError),
+    /// Command exited with the exit status.
     Exit(ExitStatus),
 }
 
