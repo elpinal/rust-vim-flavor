@@ -8,12 +8,12 @@ mod parse;
 
 use parse::{Parser, ParseError, Flavor};
 
-use std::process::Command;
-use std::process::ExitStatus;
 use std::env;
 use std::fmt;
 use std::io;
 use std::path::PathBuf;
+use std::process::Command;
+use std::process::ExitStatus;
 
 fn get_root() -> Option<PathBuf> {
     let p = env::home_dir();
