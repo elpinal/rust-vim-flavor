@@ -18,7 +18,7 @@ fn main() {
 fn run() -> Result<(), CLIError> {
     let mut args = env::args();
     match args.nth(1) {
-        None => writeln!(io::stderr(), "{}", help_message).unwrap(),
+        None => writeln!(io::stderr(), "{}", HELP_MESSAGE).unwrap(),
         Some(cmd) => get_cmd(&cmd, args)?,
     }
     Ok(())
@@ -36,7 +36,7 @@ fn no_cmd(cmd: &str) -> Result<(), CLIError> {
     Err(CLIError::NoCommand(cmd.to_owned()))
 }
 
-const help_message: &'static str = "\
+const HELP_MESSAGE: &'static str = "\
     Rust-vim-flavor is a tool to manage Vim plugins.\n\
     \n\
     Usage:\
@@ -51,7 +51,7 @@ const help_message: &'static str = "\
     ";
 
 fn help(_: env::Args) -> Result<(), CLIError> {
-    println!("{}", help_message);
+    println!("{}", HELP_MESSAGE);
     Ok(())
 }
 
