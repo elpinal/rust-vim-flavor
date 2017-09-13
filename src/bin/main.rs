@@ -16,7 +16,15 @@ fn main() {
 }
 
 fn run() -> Result<(), CLIError> {
-    let name = env::args().nth(1).ok_or(CLIError::MissingArgument)?;
+    match &*env::args().nth(1).ok_or(CLIError::MissingArgument)? {
+        "install" => install()?,
+        _ => (),
+    }
+    Ok(())
+}
+
+fn install() -> Result<(), CLIError> {
+    let name = env::args().nth(2).ok_or(CLIError::MissingArgument)?;
     let mut f = File::open(name)?;
     let mut buffer = String::new();
     f.read_to_string(&mut buffer)?;
