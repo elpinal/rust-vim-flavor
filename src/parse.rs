@@ -166,6 +166,15 @@ impl error::Error for ParseError {
             ParseError::TypeMismatch => "type mismatch",
         }
     }
+
+    fn cause(&self) -> Option<&error::Error> {
+        match *self {
+            ParseError::Utf8(ref e) => e.cause(),
+            ParseError::Terminate => None,
+            ParseError::EOF => None,
+            ParseError::TypeMismatch => None,
+        }
+    }
 }
 
 impl From<FromUtf8Error> for ParseError {
