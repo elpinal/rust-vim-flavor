@@ -9,6 +9,7 @@ mod parse;
 use parse::{Parser, ParseError, Flavor};
 
 use std::env;
+use std::error::Error;
 use std::fmt;
 use std::io;
 use std::path::PathBuf;
@@ -77,6 +78,17 @@ impl fmt::Display for InstallError {
             InstallError::Git(ref e) => write!(f, "git failed: {}", e),
             InstallError::Parse(ref e) => write!(f, "parse error: {}", e),
             InstallError::Exit(status) => status.fmt(f),
+        }
+    }
+}
+
+impl Error for InstallError {
+    fn description(&self) -> &str {
+        match *self {
+            InstallError::GetHome => "error while getting home path",
+            InstallError::Git(_) => "failed to execute 'git' command",
+            InstallError::Parse(_) => "parse error",
+            InstallError::Exit(_) => "command exited",
         }
     }
 }
