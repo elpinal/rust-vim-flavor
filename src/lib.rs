@@ -86,8 +86,8 @@ impl Error for InstallError {
     fn description(&self) -> &str {
         match *self {
             InstallError::GetHome => "error while getting home path",
-            InstallError::Git(_) => "failed to execute 'git' command",
-            InstallError::Parse(_) => "parse error",
+            InstallError::Git(ref e) => e.description(),
+            InstallError::Parse(ref e) => e.description(),
             InstallError::Exit(_) => "command exited",
         }
     }
