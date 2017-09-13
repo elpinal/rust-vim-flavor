@@ -1,5 +1,5 @@
 use std::ascii::AsciiExt;
-use std::error;
+use std::error::Error;
 use std::fmt;
 use std::iter::Enumerate;
 use std::str::Bytes;
@@ -157,7 +157,7 @@ impl fmt::Display for ParseError {
     }
 }
 
-impl error::Error for ParseError {
+impl Error for ParseError {
     fn description(&self) -> &str {
         match *self {
             ParseError::Utf8(ref e) => e.description(),
@@ -167,7 +167,7 @@ impl error::Error for ParseError {
         }
     }
 
-    fn cause(&self) -> Option<&error::Error> {
+    fn cause(&self) -> Option<&Error> {
         match *self {
             ParseError::Utf8(ref e) => e.cause(),
             ParseError::Terminate => None,
