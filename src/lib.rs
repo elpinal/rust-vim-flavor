@@ -91,6 +91,15 @@ impl Error for InstallError {
             InstallError::Exit(_) => "command exited",
         }
     }
+
+    fn cause(&self) -> Option<&Error> {
+        match *self {
+            InstallError::GetHome => None,
+            InstallError::Git(ref e) => e.cause(),
+            InstallError::Parse(ref e) => e.cause(),
+            InstallError::Exit(_) => None,
+        }
+    }
 }
 
 impl From<ParseError> for InstallError {
