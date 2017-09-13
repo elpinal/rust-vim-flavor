@@ -33,6 +33,9 @@ fn help(_: env::Args) -> Result<(), CLIError> {
     println!("\
     Rust-vim-flavor is a tool to manage Vim plugins.\n\
     \n\
+    Usage:\n\
+    \n        vim-flavor command [arguments]\n\
+    \n\
     Commands:\n\
     \n        help    show this help\
     \n        install install Vim plugins according to VimFlavor file\
