@@ -28,8 +28,8 @@ fn no_cmd(cmd: &str) -> Result<(), CLIError> {
     Err(CLIError::NoCommand(cmd.to_owned()))
 }
 
-fn install(mut args: env::Args) -> Result<(), CLIError> {
-    let name = args.next().ok_or(CLIError::MissingArgument)?;
+fn install(_: env::Args) -> Result<(), CLIError> {
+    let name = "VimFlavor";
     let mut f = File::open(name)?;
     let mut buffer = String::new();
     f.read_to_string(&mut buffer)?;
