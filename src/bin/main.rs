@@ -30,7 +30,14 @@ fn no_cmd(cmd: &str) -> Result<(), CLIError> {
 }
 
 fn help(_: env::Args) -> Result<(), CLIError> {
-    println!("Rust-vim-flavor is a tool to manage Vim plugins.");
+    println!("\
+    Rust-vim-flavor is a tool to manage Vim plugins.\n\
+    \n\
+    Commands:\n\
+    \n        help    show this help\
+    \n        install install Vim plugins according to VimFlavor file\
+    \n\
+    ");
     Ok(())
 }
 
