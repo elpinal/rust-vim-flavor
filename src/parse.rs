@@ -1,4 +1,5 @@
 use std::ascii::AsciiExt;
+use std::error;
 use std::fmt;
 use std::iter::Enumerate;
 use std::str::Bytes;
@@ -152,6 +153,17 @@ impl fmt::Display for ParseError {
             ParseError::Terminate => write!(f, "unexpected termination of string literal"),
             ParseError::EOF => write!(f, "unexpected eof"),
             ParseError::TypeMismatch => write!(f, "type mismatch"),
+        }
+    }
+}
+
+impl error::Error for ParseError {
+    fn description(&self) -> &str {
+        match *self {
+            ParseError::Utf8(ref e) => e.description(),
+            ParseError::Terminate => "unexpected termination of string literal",
+            ParseError::EOF => "unexpected end of file",
+            ParseError::TypeMismatch => "type mismatch",
         }
     }
 }
