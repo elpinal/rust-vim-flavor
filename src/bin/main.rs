@@ -24,6 +24,7 @@ fn run() -> Result<(), CLIError> {
     Ok(())
 }
 
+#[derive(Debug)]
 enum CLIError {
     MissingArgument,
     FlavorFile(io::Error),
