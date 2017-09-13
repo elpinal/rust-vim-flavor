@@ -19,9 +19,13 @@ fn run() -> Result<(), CLIError> {
     let mut args = env::args();
     match &*args.nth(1).ok_or(CLIError::MissingArgument)? {
         "install" => install(args)?,
-        _ => (),
+        cmd => no_cmd(cmd)?,
     }
     Ok(())
+}
+
+fn no_cmd(cmd: &str) -> Result<(), CLIError> {
+    Err(CLIError::NoCommand(cmd.to_owned()))
 }
 
 fn install(mut args: env::Args) -> Result<(), CLIError> {
@@ -38,6 +42,7 @@ enum CLIError {
     MissingArgument,
     FlavorFile(io::Error),
     Install(vim_flavor::InstallError),
+    NoCommand(String),
 }
 
 impl fmt::Display for CLIError {
@@ -46,6 +51,7 @@ impl fmt::Display for CLIError {
             CLIError::MissingArgument => write!(f, "1 argument needed"),
             CLIError::FlavorFile(ref e) => write!(f, "IO error: {}", e),
             CLIError::Install(ref e) => write!(f, "{}", e),
+            CLIError::NoCommand(ref name) => write!(f, "no such command: {}", name),
         }
     }
 }
@@ -56,6 +62,7 @@ impl Error for CLIError {
             CLIError::MissingArgument => "not enough arguments",
             CLIError::FlavorFile(ref e) => e.description(),
             CLIError::Install(ref e) => e.description(),
+            CLIError::NoCommand(_) => "no such command",
         }
     }
 
@@ -64,6 +71,7 @@ impl Error for CLIError {
             CLIError::MissingArgument => None,
             CLIError::FlavorFile(ref e) => e.cause(),
             CLIError::Install(ref e) => e.cause(),
+            CLIError::NoCommand(_) => None,
         }
     }
 }
