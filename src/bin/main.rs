@@ -18,6 +18,7 @@ fn main() {
 fn run() -> Result<(), CLIError> {
     let mut args = env::args();
     match &*args.nth(1).ok_or(CLIError::MissingArgument)? {
+        "help" => help(args)?,
         "install" => install(args)?,
         cmd => no_cmd(cmd)?,
     }
@@ -26,6 +27,11 @@ fn run() -> Result<(), CLIError> {
 
 fn no_cmd(cmd: &str) -> Result<(), CLIError> {
     Err(CLIError::NoCommand(cmd.to_owned()))
+}
+
+fn help(_: env::Args) -> Result<(), CLIError> {
+    println!("Rust-vim-flavor is a tool to manage Vim plugins.");
+    Ok(())
 }
 
 fn install(_: env::Args) -> Result<(), CLIError> {
