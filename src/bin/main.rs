@@ -1,6 +1,7 @@
 extern crate vim_flavor;
 
 use std::env;
+use std::error::Error;
 use std::fmt;
 use std::fs::File;
 use std::io;
@@ -35,6 +36,24 @@ impl fmt::Display for CLIError {
             CLIError::MissingArgument => write!(f, "1 argument needed"),
             CLIError::FlavorFile(ref e) => write!(f, "IO error: {}", e),
             CLIError::Install(ref e) => write!(f, "{}", e),
+        }
+    }
+}
+
+impl Error for CLIError {
+    fn description(&self) -> &str {
+        match *self {
+            CLIError::MissingArgument => "not enough arguments",
+            CLIError::FlavorFile(ref e) => e.description(),
+            CLIError::Install(ref e) => e.description(),
+        }
+    }
+
+    fn cause(&self) -> Option<&Error> {
+        match *self {
+            CLIError::MissingArgument => None,
+            CLIError::FlavorFile(ref e) => e.cause(),
+            CLIError::Install(ref e) => e.cause(),
         }
     }
 }
