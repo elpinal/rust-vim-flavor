@@ -1,12 +1,11 @@
 //! A manager of Vim plugins.
 #![warn(missing_docs)]
-#![allow(unused)]
 #![feature(ascii_ctype)]
 #![feature(slice_patterns)]
 
 mod parse;
 
-use parse::{Parser, ParseError, Flavor};
+use parse::{Parser, ParseError};
 
 use std::env;
 use std::error::Error;
