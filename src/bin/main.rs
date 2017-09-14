@@ -16,16 +16,16 @@ fn main() {
 
 fn run() -> Result<i32, CLIError> {
     let mut args = env::args();
-    match args.nth(1) {
+    Ok(match args.nth(1) {
         None => {
             writeln!(io::stderr(), "{}", HELP_MESSAGE).unwrap();
-            Ok(2)
+            2
         }
         Some(cmd) => {
             with_cmd(&cmd, args)?;
-            Ok(0)
+            0
         }
-    }
+    })
 }
 
 fn with_cmd(cmd: &str, args: env::Args) -> Result<(), CLIError> {
