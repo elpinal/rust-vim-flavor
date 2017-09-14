@@ -34,6 +34,7 @@ fn with_cmd(cmd: &str, args: env::Args) -> Result<()> {
     match cmd {
         "help" => help(args),
         "install" => install(args),
+        "update" => update(args),
         cmd => no_cmd(cmd),
     }
 }
@@ -53,6 +54,7 @@ Commands:
 
         help    show this help
         install install Vim plugins according to VimFlavor file
+        update  update plugins according to VimFlavor file
 ";
 
 fn help(mut args: env::Args) -> Result<()> {
@@ -72,6 +74,7 @@ fn with_topic(name: &str) -> Result<()> {
     match name {
         "help" => println!("usage: vim-flavor help [topic]"),
         "install" => println!("usage: vim-flavor install"),
+        "update" => println!("usage: vim-flavor update"),
         _ => Err(CLIError::NoCommand(name.to_owned()))?,
     }
     Ok(())
@@ -86,6 +89,18 @@ fn install(mut args: env::Args) -> Result<()> {
     let mut buffer = String::new();
     f.read_to_string(&mut buffer)?;
     vim_flavor::install(&buffer)?;
+    Ok(())
+}
+
+fn update(mut args: env::Args) -> Result<()> {
+    if args.next().is_some() {
+        return Err(CLIError::TooManyArguments);
+    }
+    let name = "VimFlavor";
+    let mut f = File::open(name)?;
+    let mut buffer = String::new();
+    f.read_to_string(&mut buffer)?;
+    vim_flavor::update(&buffer)?;
     Ok(())
 }
 

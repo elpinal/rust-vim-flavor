@@ -57,6 +57,32 @@ pub fn install(s: &str) -> Result<(), InstallError> {
     Ok(())
 }
 
+/// Parses content of the flavor file and updates plugins which are described in it.
+pub fn update(s: &str) -> Result<(), InstallError> {
+    let root = get_root().ok_or(InstallError::GetHome)?;
+    for f in Parser::new(s).parse()? {
+        let n = f.repo.replace(
+            |ch: char| !ch.is_alphanumeric() && ch != '-' && ch != '_' && ch != '.',
+            "_",
+        );
+        let d = root.join(n);
+        if !d.exists() {
+            continue;
+        }
+        let dest = d.to_str().expect(
+            "failed to build destination path for 'git pull'",
+        );
+        let status = Command::new("git")
+            .current_dir(dest)
+            .args(&["pull"])
+            .status()?;
+        if !status.success() {
+            return Err(InstallError::Exit(status));
+        }
+    }
+    Ok(())
+}
+
 #[derive(Debug)]
 /// Represents an error while installing plugins.
 pub enum InstallError {
