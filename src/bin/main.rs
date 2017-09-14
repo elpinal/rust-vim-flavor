@@ -53,8 +53,11 @@ Commands:
         install install Vim plugins according to VimFlavor file
 ";
 
-fn help(_: env::Args) -> Result<(), CLIError> {
-    println!("{}", HELP_MESSAGE);
+fn help(mut args: env::Args) -> Result<(), CLIError> {
+    match args.next() {
+        Some(_) => panic!("no help topic"),
+        None => println!("{}", HELP_MESSAGE),
+    }
     Ok(())
 }
 
