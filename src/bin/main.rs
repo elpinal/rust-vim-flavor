@@ -55,7 +55,7 @@ Commands:
 
 fn help(mut args: env::Args) -> Result<(), CLIError> {
     match args.next() {
-        Some(_) => panic!("no help topic"),
+        Some(name) => Err(CLIError::NoCommand(name))?,
         None => println!("{}", HELP_MESSAGE),
     }
     Ok(())
