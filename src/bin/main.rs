@@ -92,7 +92,7 @@ fn install(mut args: env::Args) -> Result<()> {
 #[derive(Debug)]
 enum CLIError {
     TooManyArguments,
-    FlavorFile(io::Error),
+    IO(io::Error),
     Install(vim_flavor::InstallError),
     NoCommand(String),
 }
@@ -101,7 +101,7 @@ impl fmt::Display for CLIError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             CLIError::TooManyArguments => write!(f, "too many arguments given"),
-            CLIError::FlavorFile(ref e) => write!(f, "IO error: {}", e),
+            CLIError::IO(ref e) => write!(f, "IO error: {}", e),
             CLIError::Install(ref e) => write!(f, "{}", e),
             CLIError::NoCommand(ref name) => write!(f, "no such command: {}", name),
         }
@@ -112,7 +112,7 @@ impl Error for CLIError {
     fn description(&self) -> &str {
         match *self {
             CLIError::TooManyArguments => "too many arguments given",
-            CLIError::FlavorFile(ref e) => e.description(),
+            CLIError::IO(ref e) => e.description(),
             CLIError::Install(ref e) => e.description(),
             CLIError::NoCommand(_) => "no such command",
         }
@@ -121,7 +121,7 @@ impl Error for CLIError {
     fn cause(&self) -> Option<&Error> {
         match *self {
             CLIError::TooManyArguments => None,
-            CLIError::FlavorFile(ref e) => e.cause(),
+            CLIError::IO(ref e) => e.cause(),
             CLIError::Install(ref e) => e.cause(),
             CLIError::NoCommand(_) => None,
         }
@@ -130,7 +130,7 @@ impl Error for CLIError {
 
 impl From<io::Error> for CLIError {
     fn from(e: io::Error) -> CLIError {
-        CLIError::FlavorFile(e)
+        CLIError::IO(e)
     }
 }
 
