@@ -19,12 +19,12 @@ fn run() -> Result<(), CLIError> {
     let mut args = env::args();
     match args.nth(1) {
         None => writeln!(io::stderr(), "{}", HELP_MESSAGE).unwrap(),
-        Some(cmd) => get_cmd(&cmd, args)?,
+        Some(cmd) => with_cmd(&cmd, args)?,
     }
     Ok(())
 }
 
-fn get_cmd(cmd: &str, args: env::Args) -> Result<(), CLIError> {
+fn with_cmd(cmd: &str, args: env::Args) -> Result<(), CLIError> {
     match cmd {
         "help" => help(args),
         "install" => install(args),
