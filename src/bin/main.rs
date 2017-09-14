@@ -14,7 +14,9 @@ fn main() {
     }))
 }
 
-fn run() -> Result<i32, CLIError> {
+type Result<T> = std::result::Result<T, CLIError>;
+
+fn run() -> Result<i32> {
     let mut args = env::args();
     Ok(match args.nth(1) {
         None => {
@@ -28,7 +30,7 @@ fn run() -> Result<i32, CLIError> {
     })
 }
 
-fn with_cmd(cmd: &str, args: env::Args) -> Result<(), CLIError> {
+fn with_cmd(cmd: &str, args: env::Args) -> Result<()> {
     match cmd {
         "help" => help(args),
         "install" => install(args),
@@ -36,7 +38,7 @@ fn with_cmd(cmd: &str, args: env::Args) -> Result<(), CLIError> {
     }
 }
 
-fn no_cmd(cmd: &str) -> Result<(), CLIError> {
+fn no_cmd(cmd: &str) -> Result<()> {
     Err(CLIError::NoCommand(cmd.to_owned()))
 }
 
@@ -53,7 +55,7 @@ Commands:
         install install Vim plugins according to VimFlavor file
 ";
 
-fn help(mut args: env::Args) -> Result<(), CLIError> {
+fn help(mut args: env::Args) -> Result<()> {
     match args.next() {
         Some(ref name) => {
             if args.next().is_some() {
@@ -66,7 +68,7 @@ fn help(mut args: env::Args) -> Result<(), CLIError> {
     Ok(())
 }
 
-fn with_topic(name: &str) -> Result<(), CLIError> {
+fn with_topic(name: &str) -> Result<()> {
     match name {
         "help" => println!("usage: vim-flavor help [topic]"),
         "install" => println!("usage: vim-flavor install"),
@@ -75,7 +77,7 @@ fn with_topic(name: &str) -> Result<(), CLIError> {
     Ok(())
 }
 
-fn install(mut args: env::Args) -> Result<(), CLIError> {
+fn install(mut args: env::Args) -> Result<()> {
     if args.next().is_some() {
         return Err(CLIError::TooManyArguments);
     }
