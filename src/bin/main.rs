@@ -31,7 +31,7 @@ fn run() -> Result<i32, CLIError> {
 fn with_cmd(cmd: &str, args: env::Args) -> Result<(), CLIError> {
     match cmd {
         "help" => help(args),
-        "install" => install(),
+        "install" => install(args),
         cmd => no_cmd(cmd),
     }
 }
@@ -55,7 +55,12 @@ Commands:
 
 fn help(mut args: env::Args) -> Result<(), CLIError> {
     match args.next() {
-        Some(ref name) => with_topic(name)?,
+        Some(ref name) => {
+            if args.next().is_some() {
+                return Err(CLIError::TooManyArguments);
+            }
+            with_topic(name)?
+        }
         None => println!("{}", HELP_MESSAGE),
     }
     Ok(())
@@ -70,7 +75,10 @@ fn with_topic(name: &str) -> Result<(), CLIError> {
     Ok(())
 }
 
-fn install() -> Result<(), CLIError> {
+fn install(mut args: env::Args) -> Result<(), CLIError> {
+    if args.next().is_some() {
+        return Err(CLIError::TooManyArguments);
+    }
     let name = "VimFlavor";
     let mut f = File::open(name)?;
     let mut buffer = String::new();
@@ -81,7 +89,7 @@ fn install() -> Result<(), CLIError> {
 
 #[derive(Debug)]
 enum CLIError {
-    MissingArgument,
+    TooManyArguments,
     FlavorFile(io::Error),
     Install(vim_flavor::InstallError),
     NoCommand(String),
@@ -90,7 +98,7 @@ enum CLIError {
 impl fmt::Display for CLIError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            CLIError::MissingArgument => write!(f, "1 argument needed"),
+            CLIError::TooManyArguments => write!(f, "too many arguments given"),
             CLIError::FlavorFile(ref e) => write!(f, "IO error: {}", e),
             CLIError::Install(ref e) => write!(f, "{}", e),
             CLIError::NoCommand(ref name) => write!(f, "no such command: {}", name),
@@ -101,7 +109,7 @@ impl fmt::Display for CLIError {
 impl Error for CLIError {
     fn description(&self) -> &str {
         match *self {
-            CLIError::MissingArgument => "not enough arguments",
+            CLIError::TooManyArguments => "too many arguments given",
             CLIError::FlavorFile(ref e) => e.description(),
             CLIError::Install(ref e) => e.description(),
             CLIError::NoCommand(_) => "no such command",
@@ -110,7 +118,7 @@ impl Error for CLIError {
 
     fn cause(&self) -> Option<&Error> {
         match *self {
-            CLIError::MissingArgument => None,
+            CLIError::TooManyArguments => None,
             CLIError::FlavorFile(ref e) => e.cause(),
             CLIError::Install(ref e) => e.cause(),
             CLIError::NoCommand(_) => None,
