@@ -25,18 +25,6 @@ impl<'a> Parser<'a> {
         p
     }
 
-    fn skip_whitespaces(&mut self) {
-        if self.byte.map(|b| !b.is_ascii_whitespace()) == Some(true) {
-            return;
-        }
-        let (n, ch) = self.buffer
-            .find(|&(_, ch)| !ch.is_ascii_whitespace())
-            .map(|(n, ch)| (n, Some(ch)))
-            .unwrap_or((self.buffer.len(), None));
-        self.offset = n;
-        self.byte = ch;
-    }
-
     fn skip_to_next_line(&mut self) {
         let m = self.offset + self.buffer.len();
         let (n, ch) = self.buffer
@@ -186,18 +174,6 @@ impl From<FromUtf8Error> for ParseError {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_skip_whitespace() {
-        let mut p = Parser::new("  abc");
-        p.skip_whitespaces();
-        assert_eq!(p.offset, 2);
-        assert_eq!(p.byte, Some(b'a'));
-
-        p.skip_whitespaces();
-        assert_eq!(p.byte, Some(b'a'));
-        assert_eq!(p.offset, 2);
-    }
 
     #[test]
     fn test_skip_to_next_line() {
