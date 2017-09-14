@@ -8,12 +8,10 @@ use std::io;
 use std::io::{Read, Write};
 
 fn main() {
-    run()
-        .and_then(|code| std::process::exit(code))
-        .unwrap_or_else(|e| {
-            writeln!(io::stderr(), "{}", e).unwrap();
-            std::process::exit(1);
-        })
+    std::process::exit(run().unwrap_or_else(|e| {
+        writeln!(io::stderr(), "{}", e).unwrap();
+        1
+    }))
 }
 
 fn run() -> Result<i32, CLIError> {
