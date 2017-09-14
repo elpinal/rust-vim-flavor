@@ -63,6 +63,7 @@ fn help(mut args: env::Args) -> Result<(), CLIError> {
 
 fn with_topic(name: &str) -> Result<(), CLIError> {
     match name {
+        "help" => println!("usage: vim-flavor help [topic]"),
         "install" => println!("usage: vim-flavor install"),
         _ => Err(CLIError::NoCommand(name.to_owned()))?,
     }
