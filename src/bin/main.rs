@@ -5,11 +5,11 @@ use std::error::Error;
 use std::fmt;
 use std::fs::File;
 use std::io;
-use std::io::{Read, Write};
+use std::io::Read;
 
 fn main() {
     std::process::exit(run().unwrap_or_else(|e| {
-        writeln!(io::stderr(), "{}", e).unwrap();
+        eprintln!("{}", e);
         1
     }))
 }
@@ -18,7 +18,7 @@ fn run() -> Result<i32, CLIError> {
     let mut args = env::args();
     Ok(match args.nth(1) {
         None => {
-            writeln!(io::stderr(), "{}", HELP_MESSAGE).unwrap();
+            eprintln!("{}", HELP_MESSAGE);
             2
         }
         Some(cmd) => {
