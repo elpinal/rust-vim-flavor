@@ -8,11 +8,10 @@ use std::io;
 use std::io::{Read, Write};
 
 fn main() {
-    let r = run();
-    if let Some(e) = r.err() {
+    run().unwrap_or_else(|e| {
         writeln!(io::stderr(), "{}", e).unwrap();
         std::process::exit(1);
-    }
+    })
 }
 
 fn run() -> Result<(), CLIError> {
