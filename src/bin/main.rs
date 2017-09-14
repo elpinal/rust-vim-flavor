@@ -55,8 +55,16 @@ Commands:
 
 fn help(mut args: env::Args) -> Result<(), CLIError> {
     match args.next() {
-        Some(name) => Err(CLIError::NoCommand(name))?,
+        Some(ref name) => with_topic(name)?,
         None => println!("{}", HELP_MESSAGE),
+    }
+    Ok(())
+}
+
+fn with_topic(name: &str) -> Result<(), CLIError> {
+    match name {
+        "install" => (),
+        _ => Err(CLIError::NoCommand(name.to_owned()))?,
     }
     Ok(())
 }
