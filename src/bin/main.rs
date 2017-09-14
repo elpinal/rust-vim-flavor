@@ -8,19 +8,26 @@ use std::io;
 use std::io::{Read, Write};
 
 fn main() {
-    run().unwrap_or_else(|e| {
-        writeln!(io::stderr(), "{}", e).unwrap();
-        std::process::exit(1);
-    })
+    run()
+        .and_then(|code| std::process::exit(code))
+        .unwrap_or_else(|e| {
+            writeln!(io::stderr(), "{}", e).unwrap();
+            std::process::exit(1);
+        })
 }
 
-fn run() -> Result<(), CLIError> {
+fn run() -> Result<i32, CLIError> {
     let mut args = env::args();
     match args.nth(1) {
-        None => writeln!(io::stderr(), "{}", HELP_MESSAGE).unwrap(),
-        Some(cmd) => with_cmd(&cmd, args)?,
+        None => {
+            writeln!(io::stderr(), "{}", HELP_MESSAGE).unwrap();
+            Ok(2)
+        }
+        Some(cmd) => {
+            with_cmd(&cmd, args)?;
+            Ok(0)
+        }
     }
-    Ok(())
 }
 
 fn with_cmd(cmd: &str, args: env::Args) -> Result<(), CLIError> {
