@@ -31,7 +31,7 @@ fn run() -> Result<i32, CLIError> {
 fn with_cmd(cmd: &str, args: env::Args) -> Result<(), CLIError> {
     match cmd {
         "help" => help(args),
-        "install" => install(args),
+        "install" => install(),
         cmd => no_cmd(cmd),
     }
 }
@@ -58,7 +58,7 @@ fn help(_: env::Args) -> Result<(), CLIError> {
     Ok(())
 }
 
-fn install(_: env::Args) -> Result<(), CLIError> {
+fn install() -> Result<(), CLIError> {
     let name = "VimFlavor";
     let mut f = File::open(name)?;
     let mut buffer = String::new();
