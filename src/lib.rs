@@ -89,7 +89,7 @@ pub enum InstallError {
     /// Cannot get the home directory.
     GetHome,
     /// Error when executing the 'git' command.
-    Git(io::Error),
+    IO(io::Error),
     /// Given Flavor file cannot be parsed successfully.
     Parse(ParseError),
     /// Command exited with the exit status.
@@ -100,7 +100,7 @@ impl fmt::Display for InstallError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             InstallError::GetHome => write!(f, "error while getting home path"),
-            InstallError::Git(ref e) => write!(f, "git failed: {}", e),
+            InstallError::IO(ref e) => write!(f, "IO error: {}", e),
             InstallError::Parse(ref e) => write!(f, "parse error: {}", e),
             InstallError::Exit(status) => status.fmt(f),
         }
@@ -111,7 +111,7 @@ impl Error for InstallError {
     fn description(&self) -> &str {
         match *self {
             InstallError::GetHome => "error while getting home path",
-            InstallError::Git(ref e) => e.description(),
+            InstallError::IO(ref e) => e.description(),
             InstallError::Parse(ref e) => e.description(),
             InstallError::Exit(_) => "command exited",
         }
@@ -120,7 +120,7 @@ impl Error for InstallError {
     fn cause(&self) -> Option<&Error> {
         match *self {
             InstallError::GetHome => None,
-            InstallError::Git(ref e) => e.cause(),
+            InstallError::IO(ref e) => e.cause(),
             InstallError::Parse(ref e) => e.cause(),
             InstallError::Exit(_) => None,
         }
@@ -135,7 +135,7 @@ impl From<ParseError> for InstallError {
 
 impl From<io::Error> for InstallError {
     fn from(e: io::Error) -> InstallError {
-        InstallError::Git(e)
+        InstallError::IO(e)
     }
 }
 
