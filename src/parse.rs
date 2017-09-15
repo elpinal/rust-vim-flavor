@@ -65,11 +65,11 @@ impl<'a> Parser<'a> {
             vec.push(b);
             self.next();
         }
-        let s = String::from_utf8(vec)?;
-        Ok(match &*s {
+        let s: &str = &String::from_utf8(vec)?;
+        Ok(match s {
             "flavor" => Token::Flavor,
             "group" => Token::Group,
-            _ => Token::Ident(s),
+            _ => Token::Ident(s.to_owned()),
         })
     }
 
