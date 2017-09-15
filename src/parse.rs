@@ -50,6 +50,7 @@ impl<'a> Parser<'a> {
                 b'\'' => self.read_string(),
                 b'#' => Ok(Token::Hash),
                 b',' => Ok(Token::Comma),
+                b':' => Ok(Token::Colon),
                 _ => Ok(Token::Illegal),
             }
         })
@@ -114,6 +115,7 @@ enum Token {
     Ident(String),
     Str(String),
     Comma,
+    Colon,
     Flavor,
 }
 
@@ -237,7 +239,7 @@ mod tests {
         assert_eq!(p.next_token().err(), Some(ParseError::EOF));
         assert_eq!(p.offset, 8);
 
-        let mut p = Parser::new("#'aaa',");
+        let mut p = Parser::new("#'aaa',:");
         assert_eq!(p.next_token(), Ok(Token::Hash));
         assert_eq!(p.offset, 1);
 
@@ -246,6 +248,9 @@ mod tests {
 
         assert_eq!(p.next_token(), Ok(Token::Comma));
         assert_eq!(p.offset, 7);
+
+        assert_eq!(p.next_token(), Ok(Token::Colon));
+        assert_eq!(p.offset, 8);
     }
 
     #[test]
