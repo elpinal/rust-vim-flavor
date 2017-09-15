@@ -58,12 +58,11 @@ impl<'a> Parser<'a> {
     fn read_ident(&mut self) -> Result<Token, ParseError> {
         let mut vec = Vec::new();
         while let Some(b) = self.byte {
-            if b.is_ascii_alphabetic() {
-                vec.push(b);
-                self.next();
-            } else {
+            if !b.is_ascii_alphabetic() {
                 break;
             }
+            vec.push(b);
+            self.next();
         }
         let s = String::from_utf8(vec)?;
         if s == "flavor" {
@@ -75,12 +74,11 @@ impl<'a> Parser<'a> {
     fn read_string(&mut self) -> Result<Token, ParseError> {
         let mut vec = Vec::new();
         while let Some(b) = self.byte {
-            if b != b'\'' {
-                vec.push(b);
-                self.next();
-            } else {
+            if b == b'\'' {
                 break;
             }
+            vec.push(b);
+            self.next();
         }
         if self.byte != Some(b'\'') {
             return Err(ParseError::Terminate);
