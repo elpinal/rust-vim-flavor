@@ -68,6 +68,8 @@ impl<'a> Parser<'a> {
         let s = String::from_utf8(vec)?;
         if s == "flavor" {
             return Ok(Token::Flavor);
+        } else if s == "group" {
+            return Ok(Token::Group);
         }
         Ok(Token::Ident(s))
     }
@@ -117,6 +119,7 @@ enum Token {
     Comma,
     Colon,
     Flavor,
+    Group,
 }
 
 #[derive(Debug, PartialEq)]
@@ -239,7 +242,7 @@ mod tests {
         assert_eq!(p.next_token().err(), Some(ParseError::EOF));
         assert_eq!(p.offset, 8);
 
-        let mut p = Parser::new("#'aaa',:");
+        let mut p = Parser::new("#'aaa',:group");
         assert_eq!(p.next_token(), Ok(Token::Hash));
         assert_eq!(p.offset, 1);
 
@@ -251,6 +254,9 @@ mod tests {
 
         assert_eq!(p.next_token(), Ok(Token::Colon));
         assert_eq!(p.offset, 8);
+
+        assert_eq!(p.next_token(), Ok(Token::Group));
+        assert_eq!(p.offset, 13);
     }
 
     #[test]
