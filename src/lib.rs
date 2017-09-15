@@ -155,4 +155,9 @@ mod tests {
         let rs = complete(s);
         assert_eq!(rs, "https://github.com/elpinal/vim-goyacc".to_owned());
     }
+
+    #[test]
+    fn test_is_invalid() {
+        assert!(!is_invalid('a'));
+    }
 }
