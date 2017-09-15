@@ -39,7 +39,6 @@ fn is_valid(ch: char) -> bool {
 pub fn install(s: &str) -> Result<(), InstallError> {
     let root = get_root().ok_or(InstallError::GetHome)?;
     for f in Parser::new(s).parse()? {
-        let r = complete(&f.repo);
         let n = f.repo.replace(is_valid, "_");
         let d = root.join(n);
         if d.exists() {
@@ -48,6 +47,7 @@ pub fn install(s: &str) -> Result<(), InstallError> {
         let dest = d.to_str().expect(
             "failed to build destination path for 'git clone'",
         );
+        let r = complete(&f.repo);
         let status = Command::new("git")
             .args(&["clone", "--depth", "1", &r, dest])
             .status()?;
@@ -60,27 +60,27 @@ pub fn install(s: &str) -> Result<(), InstallError> {
 
 /// Parses content of the flavor file and updates plugins which are described in it.
 pub fn update(s: &str) -> Result<(), InstallError> {
+    git_with_flavor(s, false, &["pull"])
+}
+
+fn git_with_flavor(s: &str, not: bool, args: &[&str]) -> Result<(), InstallError> {
     let root = get_root().ok_or(InstallError::GetHome)?;
     for f in Parser::new(s).parse()? {
         let n = f.repo.replace(is_valid, "_");
         let d = root.join(n);
-        if !d.exists() {
+        if not == d.exists() {
             continue;
         }
         let dest = d.to_str().expect(
             "failed to build destination path for 'git pull'",
         );
-        let status = Command::new("git")
-            .current_dir(dest)
-            .args(&["pull"])
-            .status()?;
+        let status = Command::new("git").current_dir(dest).args(args).status()?;
         if !status.success() {
             return Err(InstallError::Exit(status));
         }
     }
     Ok(())
 }
-
 #[derive(Debug)]
 /// Represents an error while installing plugins.
 pub enum InstallError {
