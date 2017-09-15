@@ -66,12 +66,11 @@ impl<'a> Parser<'a> {
             self.next();
         }
         let s = String::from_utf8(vec)?;
-        match &*s {
-            "flavor" => return Ok(Token::Flavor),
-            "group" => return Ok(Token::Group),
-            _ => (),
-        }
-        Ok(Token::Ident(s))
+        Ok(match &*s {
+            "flavor" => Token::Flavor,
+            "group" => Token::Group,
+            _ => Token::Ident(s),
+        })
     }
 
     fn read_string(&mut self) -> Result<Token, ParseError> {
