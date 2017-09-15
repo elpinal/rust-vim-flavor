@@ -153,7 +153,7 @@ mod tests {
 
         let s = "https://github.com/elpinal/vim-goyacc";
         let rs = complete(s);
-        assert_eq!(rs, "https://github.com/elpinal/vim-goyacc".to_owned());
+        assert_eq!(rs, s.to_owned());
     }
 
     #[test]
