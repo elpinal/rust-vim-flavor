@@ -12,8 +12,7 @@ use std::error::Error;
 use std::fmt;
 use std::io;
 use std::path::PathBuf;
-use std::process::Command;
-use std::process::ExitStatus;
+use std::process::{Command, ExitStatus};
 
 fn get_root() -> Option<PathBuf> {
     env::home_dir().map(|mut p| {
