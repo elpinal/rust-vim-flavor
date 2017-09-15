@@ -163,5 +163,11 @@ mod tests {
         assert!(!is_invalid('.'));
         assert!(!is_invalid('-'));
         assert!(!is_invalid('_'));
+
+        assert!(is_invalid('!'));
+        assert!(is_invalid('/'));
+        assert!(is_invalid('~'));
+        assert!(is_invalid(' '));
+        assert!(is_invalid(','));
     }
 }
