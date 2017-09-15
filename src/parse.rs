@@ -66,10 +66,10 @@ impl<'a> Parser<'a> {
             self.next();
         }
         let s = String::from_utf8(vec)?;
-        if s == "flavor" {
-            return Ok(Token::Flavor);
-        } else if s == "group" {
-            return Ok(Token::Group);
+        match &*s {
+            "flavor" => return Ok(Token::Flavor),
+            "group" => return Ok(Token::Group),
+            _ => (),
         }
         Ok(Token::Ident(s))
     }
