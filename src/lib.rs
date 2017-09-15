@@ -31,7 +31,7 @@ fn complete(s: &str) -> String {
     }
 }
 
-fn is_valid(ch: char) -> bool {
+fn is_invalid(ch: char) -> bool {
     !ch.is_alphanumeric() && ch != '-' && ch != '_' && ch != '.'
 }
 
