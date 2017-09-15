@@ -159,5 +159,9 @@ mod tests {
     #[test]
     fn test_is_invalid() {
         assert!(!is_invalid('a'));
+        assert!(!is_invalid('1'));
+        assert!(!is_invalid('.'));
+        assert!(!is_invalid('-'));
+        assert!(!is_invalid('_'));
     }
 }
