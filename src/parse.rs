@@ -36,7 +36,7 @@ impl<'a> Parser<'a> {
     fn next(&mut self) {
         let n = self.buffer.next();
         self.offset += 1;
-        self.byte = n.map(|t| t.1);
+        self.byte = n.map(|(_, b)| b);
     }
 
     fn next_token(&mut self) -> Result<Token, ParseError> {
