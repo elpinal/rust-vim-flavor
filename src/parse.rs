@@ -2,8 +2,7 @@ use std::ascii::AsciiExt;
 use std::error::Error;
 use std::fmt;
 use std::iter::Enumerate;
-use std::str::Bytes;
-use std::str::Utf8Error;
+use std::str::{Bytes, Utf8Error};
 use std::string::FromUtf8Error;
 
 /// A parser which parses VimFlavor file.
