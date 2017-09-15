@@ -39,7 +39,7 @@ fn is_invalid(ch: char) -> bool {
 pub fn install(s: &str) -> Result<(), InstallError> {
     let root = get_root().ok_or(InstallError::GetHome)?;
     for f in Parser::new(s).parse()? {
-        let n = f.repo.replace(is_valid, "_");
+        let n = f.repo.replace(is_invalid, "_");
         let d = root.join(n);
         if d.exists() {
             continue;
@@ -66,7 +66,7 @@ pub fn update(s: &str) -> Result<(), InstallError> {
 fn git_with_flavor(s: &str, not: bool, args: &[&str]) -> Result<(), InstallError> {
     let root = get_root().ok_or(InstallError::GetHome)?;
     for f in Parser::new(s).parse()? {
-        let n = f.repo.replace(is_valid, "_");
+        let n = f.repo.replace(is_invalid, "_");
         let d = root.join(n);
         if not == d.exists() {
             continue;
