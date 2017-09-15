@@ -19,8 +19,7 @@ impl<'a> Parser<'a> {
             offset: 0,
             byte: None,
         };
-        let n = p.buffer.next();
-        p.byte = n.map(|t| t.1);
+        p.byte = p.buffer.next().map(|t| t.1);
         p
     }
 
