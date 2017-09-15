@@ -139,6 +139,7 @@ impl From<io::Error> for InstallError {
     }
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 
