@@ -14,13 +14,13 @@ pub struct Parser<'a> {
 
 impl<'a> Parser<'a> {
     pub fn new(buffer: &str) -> Parser {
-        let mut p = Parser {
-            buffer: buffer.bytes().enumerate(),
+        let mut bytes = buffer.bytes().enumerate();
+        let byte = bytes.next().map(|(_, b)| b);
+        Parser {
+            buffer: bytes,
             offset: 0,
-            byte: None,
-        };
-        p.byte = p.buffer.next().map(|t| t.1);
-        p
+            byte,
+        }
     }
 
     fn skip_to_next_line(&mut self) {
