@@ -50,6 +50,7 @@ pub fn install(s: &str) -> Result<(), InstallError> {
         let status = Command::new("git")
             .args(&["clone", "--depth", "1", &r, dest])
             .stdout(Stdio::null())
+            .stderr(Stdio::null())
             .status()?;
         if !status.success() {
             return Err(InstallError::Exit(status));
