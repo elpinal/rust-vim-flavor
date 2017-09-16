@@ -32,7 +32,7 @@ fn run() -> Result<i32> {
 
 fn with_cmd(cmd: &str, args: env::Args) -> Result<()> {
     match cmd {
-        "help" => help(args),
+        "help" | "-h" => help(args),
         "install" => install(args),
         "update" => update(args),
         cmd => no_cmd(cmd),
