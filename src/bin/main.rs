@@ -123,7 +123,14 @@ impl fmt::Display for CLIError {
             CLIError::TooManyArguments => write!(f, "too many arguments given"),
             CLIError::IO(ref e) => write!(f, "IO error: {}", e),
             CLIError::Install(ref e) => write!(f, "{}", e),
-            CLIError::NoCommand(ref name) => write!(f, "no such command: {}", name),
+            CLIError::NoCommand(ref name) => {
+                write!(
+                    f,
+                    "no such command: {}\n\
+                     Run 'vim-flavor help' for usage.",
+                    name
+                )
+            }
             CLIError::NoTopic(ref name) => write!(f, "no such help topic: {}", name),
         }
     }
