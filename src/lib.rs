@@ -51,7 +51,12 @@ pub fn install(s: &str) -> Result<(), InstallError> {
             .args(&["clone", "--depth", "1", &r, dest])
             .output()?;
         if !output.status.success() {
-            eprintln!("{}", String::from_utf8_lossy(&output.stderr));
+            eprintln!(
+                "{}:\n\
+                 {}",
+                f.repo,
+                String::from_utf8_lossy(&output.stderr)
+            );
             return Err(InstallError::Exit(output.status));
         }
     }
