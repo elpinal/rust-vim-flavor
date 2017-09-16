@@ -75,7 +75,7 @@ fn with_topic(name: &str) -> Result<()> {
         "help" => println!("usage: vim-flavor help [topic]"),
         "install" => println!("usage: vim-flavor install"),
         "update" => println!("usage: vim-flavor update"),
-        _ => Err(CLIError::NoCommand(name.to_owned()))?,
+        _ => Err(CLIError::NoTopic(name.to_owned()))?,
     }
     Ok(())
 }
@@ -110,6 +110,7 @@ enum CLIError {
     IO(io::Error),
     Install(vim_flavor::InstallError),
     NoCommand(String),
+    NoTopic(String),
 }
 
 impl fmt::Display for CLIError {
@@ -119,6 +120,7 @@ impl fmt::Display for CLIError {
             CLIError::IO(ref e) => write!(f, "IO error: {}", e),
             CLIError::Install(ref e) => write!(f, "{}", e),
             CLIError::NoCommand(ref name) => write!(f, "no such command: {}", name),
+            CLIError::NoTopic(ref name) => write!(f, "no such help topic: {}", name),
         }
     }
 }
@@ -130,6 +132,7 @@ impl Error for CLIError {
             CLIError::IO(ref e) => e.description(),
             CLIError::Install(ref e) => e.description(),
             CLIError::NoCommand(_) => "no such command",
+            CLIError::NoTopic(_) => "no such help topic",
         }
     }
 
@@ -139,6 +142,7 @@ impl Error for CLIError {
             CLIError::IO(ref e) => e.cause(),
             CLIError::Install(ref e) => e.cause(),
             CLIError::NoCommand(_) => None,
+            CLIError::NoTopic(_) => None,
         }
     }
 }
