@@ -74,6 +74,7 @@ fn git_with_flavor(s: &str, not: bool, args: &[&str]) -> Result<(), InstallError
         let n = f.repo.replace(is_invalid, "_");
         let d = root.join(n);
         if not == d.exists() {
+            eprintln!("Skipped {}: not installed yet.", f.repo);
             continue;
         }
         let dest = d.to_str().expect(
