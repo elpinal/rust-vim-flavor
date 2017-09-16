@@ -91,8 +91,17 @@ impl<'a> Parser<'a> {
 
     pub fn parse(&mut self) -> Result<Vec<Flavor>, ParseError> {
         let mut vec = Vec::new();
-        while let Some(t) = self.next_token().ok() {
-            match t {
+        self.parse1(&mut vec).or_else(|e| if e.is_eof_error() {
+            Ok(())
+        } else {
+            Err(e)
+        })?;
+        Ok(vec)
+    }
+
+    fn parse1(&mut self, vec: &mut Vec<Flavor>) -> Result<(), ParseError> {
+        loop {
+            match self.next_token()? {
                 Token::Hash => self.skip_to_next_line(),
                 Token::Flavor => {
                     let t = self.next_token()?;
@@ -105,7 +114,6 @@ impl<'a> Parser<'a> {
                 _ => (),
             }
         }
-        Ok(vec)
     }
 }
 
