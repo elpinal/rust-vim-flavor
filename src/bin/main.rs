@@ -55,6 +55,10 @@ Commands:
         help    show this help
         install install Vim plugins according to VimFlavor file
         update  update plugins according to VimFlavor file
+
+Flags:
+
+        -h      same as 'help' command
 ";
 
 fn help(mut args: env::Args) -> Result<()> {
