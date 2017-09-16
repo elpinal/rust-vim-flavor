@@ -47,13 +47,12 @@ pub fn install(s: &str) -> Result<(), InstallError> {
             "failed to build destination path for 'git clone'",
         );
         let r = complete(&f.repo);
-        let status = Command::new("git")
+        let output = Command::new("git")
             .args(&["clone", "--depth", "1", &r, dest])
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .status()?;
-        if !status.success() {
-            return Err(InstallError::Exit(status));
+            .output()?;
+        if !output.status.success() {
+            eprintln!("{}", String::from_utf8_lossy(&output.stderr));
+            return Err(InstallError::Exit(output.status));
         }
     }
     Ok(())
