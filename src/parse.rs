@@ -134,6 +134,15 @@ pub enum ParseError {
     TypeMismatch,
 }
 
+impl ParseError {
+    fn is_eof_error(&self) -> bool {
+        match *self {
+            ParseError::EOF => true,
+            _ => false,
+        }
+    }
+}
+
 impl fmt::Display for ParseError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
@@ -269,5 +278,11 @@ mod tests {
         let s = "flavor flavor";
         let mut p = Parser::new(s);
         assert!(p.parse().is_err());
+    }
+
+    #[test]
+    fn test_is_eof_error() {
+        assert!(ParseError::EOF.is_eof_error());
+        assert!(!ParseError::Terminate.is_eof_error());
     }
 }
