@@ -81,6 +81,8 @@ fn git_with_flavor(s: &str, not: bool, args: &[&str]) -> Result<(), InstallError
         );
         let output = Command::new("git").current_dir(dest).args(args).output()?;
         if !output.status.success() {
+            eprintln!("{}:", f.repo);
+            eprintln!("{}", String::from_utf8_lossy(&output.stderr));
             return Err(InstallError::Exit(output.status));
         }
     }
