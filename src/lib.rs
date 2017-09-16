@@ -79,9 +79,9 @@ fn git_with_flavor(s: &str, not: bool, args: &[&str]) -> Result<(), InstallError
         let dest = d.to_str().expect(
             "failed to build destination path for 'git pull'",
         );
-        let status = Command::new("git").current_dir(dest).args(args).status()?;
-        if !status.success() {
-            return Err(InstallError::Exit(status));
+        let output = Command::new("git").current_dir(dest).args(args).output()?;
+        if !output.status.success() {
+            return Err(InstallError::Exit(output.status));
         }
     }
     Ok(())
