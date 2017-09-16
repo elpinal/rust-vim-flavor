@@ -30,19 +30,6 @@ fn run() -> Result<i32> {
     })
 }
 
-fn with_cmd(cmd: &str, args: env::Args) -> Result<()> {
-    match cmd {
-        "help" | "-h" => help(args),
-        "install" => install(args),
-        "update" => update(args),
-        cmd => no_cmd(cmd),
-    }
-}
-
-fn no_cmd(cmd: &str) -> Result<()> {
-    Err(CLIError::NoCommand(cmd.to_owned()))
-}
-
 const HELP_MESSAGE: &'static str = "\
 Rust-vim-flavor is a tool to manage Vim plugins.
 
@@ -60,6 +47,19 @@ Flags:
 
         -h      same as 'help' command
 ";
+
+fn with_cmd(cmd: &str, args: env::Args) -> Result<()> {
+    match cmd {
+        "help" | "-h" => help(args),
+        "install" => install(args),
+        "update" => update(args),
+        cmd => no_cmd(cmd),
+    }
+}
+
+fn no_cmd(cmd: &str) -> Result<()> {
+    Err(CLIError::NoCommand(cmd.to_owned()))
+}
 
 fn help(mut args: env::Args) -> Result<()> {
     match args.next() {
