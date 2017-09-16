@@ -12,7 +12,7 @@ use std::error::Error;
 use std::fmt;
 use std::io;
 use std::path::PathBuf;
-use std::process::{Command, ExitStatus};
+use std::process::{Command, ExitStatus, Stdio};
 
 fn get_root() -> Option<PathBuf> {
     env::home_dir().map(|mut p| {
@@ -49,6 +49,7 @@ pub fn install(s: &str) -> Result<(), InstallError> {
         let r = complete(&f.repo);
         let status = Command::new("git")
             .args(&["clone", "--depth", "1", &r, dest])
+            .stdout(Stdio::null())
             .status()?;
         if !status.success() {
             return Err(InstallError::Exit(status));
