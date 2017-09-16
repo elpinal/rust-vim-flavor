@@ -52,7 +52,7 @@ pub fn install(s: &str) -> Result<(), InstallError> {
             .output()?;
         if !output.status.success() {
             eprintln!(
-                "{}:\n\
+                "{}: failed to install:\n\
                  {}",
                 f.repo,
                 String::from_utf8_lossy(&output.stderr)
