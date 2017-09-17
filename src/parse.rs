@@ -119,7 +119,7 @@ impl<'a> Parser<'a> {
 }
 
 #[derive(Debug, PartialEq)]
-enum Token {
+pub enum Token {
     Illegal,
     Hash,
     Ident(String),
