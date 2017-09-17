@@ -69,6 +69,7 @@ impl<'a> Parser<'a> {
         Ok(match s {
             "flavor" => Token::Flavor,
             "group" => Token::Group,
+            "branch" => Token::Branch,
             _ => Token::Ident(s.to_owned()),
         })
     }
@@ -127,6 +128,7 @@ enum Token {
     Colon,
     Flavor,
     Group,
+    Branch,
 }
 
 #[derive(Debug, PartialEq)]
@@ -273,6 +275,9 @@ mod tests {
 
         assert_eq!(p.next_token(), Ok(Token::Group));
         assert_eq!(p.offset, 13);
+
+        let mut p = Parser::new("branch");
+        assert_eq!(p.next_token(), Ok(Token::Branch));
     }
 
     #[test]
