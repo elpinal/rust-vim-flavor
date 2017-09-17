@@ -105,17 +105,10 @@ impl<'a> Parser<'a> {
             match self.next_token()? {
                 Token::Hash => self.skip_to_next_line(),
                 Token::Flavor => {
-                    let t = self.next_token()?;
-                    match t {
-                        Token::Str(s) => {
-                            vec.push(Flavor {
-                                repo: s,
-                                branch: String::new(),
-                            })
-                        }
-                        _ => return Err(ParseError::TypeMismatch),
-
-                    }
+                    vec.push(Flavor {
+                        repo: self.parse_str()?,
+                        branch: String::new(),
+                    })
                 }
                 Token::Comma => self.parse_attrs(vec)?,
                 t => return Err(ParseError::Unexpected(t, Token::Flavor)),
