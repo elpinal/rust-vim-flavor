@@ -133,12 +133,12 @@ impl<'a> Parser<'a> {
                     Token::Str(s) => {
                         f.branch = s;
                         vec.push(f);
-                        return Ok(());
+                        Ok(())
                     }
-                    _ => return Err(ParseError::TypeMismatch),
+                    _ => Err(ParseError::TypeMismatch),
                 }
             }
-            t => return Err(ParseError::Unexpected(t, Token::Branch)),
+            t => Err(ParseError::Unexpected(t, Token::Branch)),
         }
     }
 }
