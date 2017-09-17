@@ -130,12 +130,17 @@ impl<'a> Parser<'a> {
                     ParseError::Unexpected(Token::Comma, Token::Flavor),
                 )?;
                 match self.next_token()? {
-                    Token::Str(s) => {
-                        f.branch = s;
-                        vec.push(f);
-                        Ok(())
+                    Token::Colon => {
+                        match self.next_token()? {
+                            Token::Str(s) => {
+                                f.branch = s;
+                                vec.push(f);
+                                Ok(())
+                            }
+                            _ => Err(ParseError::TypeMismatch),
+                        }
                     }
-                    _ => Err(ParseError::TypeMismatch),
+                    t => Err(ParseError::Unexpected(t, Token::Colon)),
                 }
             }
             t => Err(ParseError::Unexpected(t, Token::Branch)),
@@ -332,7 +337,7 @@ mod tests {
         let mut p = Parser::new(s);
         assert!(p.parse().is_err());
 
-        let s = "flavor 'repo', branch 'master'";
+        let s = "flavor 'repo', branch: 'master'";
         let mut p = Parser::new(s);
         assert_eq!(
             p.parse(),
