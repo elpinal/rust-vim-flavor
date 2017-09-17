@@ -343,6 +343,10 @@ mod tests {
                 },
             ])
         );
+
+        let s = ", branch";
+        let mut p = Parser::new(s);
+        assert!(p.parse().is_err());
     }
 
     #[test]
