@@ -10,7 +10,7 @@ In this repository, use [`Cargo`](http://doc.crates.io/guide.html):
 $ cargo install
 ```
 
-then, an executable, named 'vim-flavor', will be installed.
+then an executable, named 'vim-flavor', will be installed.
 
 ## Author
 
