@@ -117,13 +117,13 @@ impl<'a> Parser<'a> {
 
                     }
                 }
-                Token::Comma => self.parse_comma(vec)?,
+                Token::Comma => self.parse_attrs(vec)?,
                 _ => (),
             }
         }
     }
 
-    fn parse_comma(&mut self, vec: &mut Vec<Flavor>) -> Result<(), ParseError> {
+    fn parse_attrs(&mut self, vec: &mut Vec<Flavor>) -> Result<(), ParseError> {
         match self.next_token()? {
             Token::Branch => {
                 let mut f = vec.pop().ok_or(
