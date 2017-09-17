@@ -117,6 +117,24 @@ impl<'a> Parser<'a> {
 
                     }
                 }
+                Token::Comma => {
+                    if vec.is_empty() {
+                        return Err(ParseError::Unexpected(Token::Comma, Token::Flavor));
+                    }
+                    match self.next_token()? {
+                        Token::Branch => {
+                            let mut f = vec.pop().unwrap();
+                            match self.next_token()? {
+                                Token::Str(s) => {
+                                    f.branch = s;
+                                    vec.push(f);
+                                }
+                                _ => return Err(ParseError::TypeMismatch),
+                            }
+                        }
+                        t => return Err(ParseError::Unexpected(t, Token::Branch)),
+                    }
+                }
                 _ => (),
             }
         }
@@ -311,6 +329,18 @@ mod tests {
         let s = "flavor flavor";
         let mut p = Parser::new(s);
         assert!(p.parse().is_err());
+
+        let s = "flavor 'repo', branch 'master'";
+        let mut p = Parser::new(s);
+        assert_eq!(
+            p.parse(),
+            Ok(vec![
+                Flavor {
+                    repo: "repo".to_owned(),
+                    branch: "master".to_owned(),
+                },
+            ])
+        );
     }
 
     #[test]
