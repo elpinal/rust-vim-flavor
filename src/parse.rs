@@ -131,19 +131,21 @@ impl<'a> Parser<'a> {
                 )?;
                 match self.next_token()? {
                     Token::Colon => {
-                        match self.next_token()? {
-                            Token::Str(s) => {
-                                f.branch = s;
-                                vec.push(f);
-                                Ok(())
-                            }
-                            _ => Err(ParseError::TypeMismatch),
-                        }
+                        f.branch = self.parse_str()?;
+                        vec.push(f);
+                        Ok(())
                     }
                     t => Err(ParseError::Unexpected(t, Token::Colon)),
                 }
             }
             t => Err(ParseError::Unexpected(t, Token::Branch)),
+        }
+    }
+
+    fn parse_str(&mut self) -> Result<String, ParseError> {
+        match self.next_token()? {
+            Token::Str(s) => Ok(s),
+            _ => Err(ParseError::TypeMismatch),
         }
     }
 }
