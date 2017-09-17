@@ -354,6 +354,10 @@ mod tests {
             ])
         );
 
+        let s = "flavor 'repo', branch 'missing a colon'";
+        let mut p = Parser::new(s);
+        assert!(p.parse().is_err());
+
         let s = ", branch";
         let mut p = Parser::new(s);
         assert!(p.parse().is_err());
