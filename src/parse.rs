@@ -46,7 +46,7 @@ impl<'a> Parser<'a> {
             }
             self.next();
             match b {
-                b' ' => self.next_token(),
+                b' ' | b'\n' => self.next_token(),
                 b'\'' => self.read_string(),
                 b'#' => Ok(Token::Hash),
                 b',' => Ok(Token::Comma),
@@ -118,7 +118,7 @@ impl<'a> Parser<'a> {
                     }
                 }
                 Token::Comma => self.parse_attrs(vec)?,
-                _ => (),
+                t => return Err(ParseError::Unexpected(t, Token::Flavor)),
             }
         }
     }
@@ -355,6 +355,10 @@ mod tests {
         );
 
         let s = "flavor 'repo', branch 'missing a colon'";
+        let mut p = Parser::new(s);
+        assert!(p.parse().is_err());
+
+        let s = "flavor 'repo' branch: 'missing a comma'";
         let mut p = Parser::new(s);
         assert!(p.parse().is_err());
 
