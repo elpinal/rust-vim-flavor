@@ -124,18 +124,14 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_attrs(&mut self, vec: &mut Vec<Flavor>) -> Result<(), ParseError> {
-        match self.next_token()? {
-            Token::Branch => {
-                let mut f = vec.pop().ok_or(
-                    ParseError::Unexpected(Token::Comma, Token::Flavor),
-                )?;
-                self.parse_colon()?;
-                f.branch = self.parse_str()?;
-                vec.push(f);
-                Ok(())
-            }
-            t => Err(ParseError::Unexpected(t, Token::Branch)),
-        }
+        self.parse_branch()?;
+        let mut f = vec.pop().ok_or(
+            ParseError::Unexpected(Token::Comma, Token::Flavor),
+        )?;
+        self.parse_colon()?;
+        f.branch = self.parse_str()?;
+        vec.push(f);
+        Ok(())
     }
 
     fn parse_str(&mut self) -> Result<String, ParseError> {
@@ -149,6 +145,13 @@ impl<'a> Parser<'a> {
         match self.next_token()? {
             Token::Colon => Ok(()),
             t => Err(ParseError::Unexpected(t, Token::Colon)),
+        }
+    }
+
+    fn parse_branch(&mut self) -> Result<(), ParseError> {
+        match self.next_token()? {
+            Token::Branch => Ok(()),
+            t => Err(ParseError::Unexpected(t, Token::Branch)),
         }
     }
 }
