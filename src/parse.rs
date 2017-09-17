@@ -124,12 +124,11 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_comma(&mut self, vec: &mut Vec<Flavor>) -> Result<(), ParseError> {
-        if vec.is_empty() {
-            return Err(ParseError::Unexpected(Token::Comma, Token::Flavor));
-        }
         match self.next_token()? {
             Token::Branch => {
-                let mut f = vec.pop().unwrap();
+                let mut f = vec.pop().ok_or(
+                    ParseError::Unexpected(Token::Comma, Token::Flavor),
+                )?;
                 match self.next_token()? {
                     Token::Str(s) => {
                         f.branch = s;
