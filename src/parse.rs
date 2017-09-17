@@ -129,14 +129,10 @@ impl<'a> Parser<'a> {
                 let mut f = vec.pop().ok_or(
                     ParseError::Unexpected(Token::Comma, Token::Flavor),
                 )?;
-                match self.next_token()? {
-                    Token::Colon => {
-                        f.branch = self.parse_str()?;
-                        vec.push(f);
-                        Ok(())
-                    }
-                    t => Err(ParseError::Unexpected(t, Token::Colon)),
-                }
+                self.parse_colon()?;
+                f.branch = self.parse_str()?;
+                vec.push(f);
+                Ok(())
             }
             t => Err(ParseError::Unexpected(t, Token::Branch)),
         }
@@ -146,6 +142,13 @@ impl<'a> Parser<'a> {
         match self.next_token()? {
             Token::Str(s) => Ok(s),
             _ => Err(ParseError::TypeMismatch),
+        }
+    }
+
+    fn parse_colon(&mut self) -> Result<(), ParseError> {
+        match self.next_token()? {
+            Token::Colon => Ok(()),
+            t => Err(ParseError::Unexpected(t, Token::Colon)),
         }
     }
 }
