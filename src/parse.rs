@@ -117,26 +117,29 @@ impl<'a> Parser<'a> {
 
                     }
                 }
-                Token::Comma => {
-                    if vec.is_empty() {
-                        return Err(ParseError::Unexpected(Token::Comma, Token::Flavor));
-                    }
-                    match self.next_token()? {
-                        Token::Branch => {
-                            let mut f = vec.pop().unwrap();
-                            match self.next_token()? {
-                                Token::Str(s) => {
-                                    f.branch = s;
-                                    vec.push(f);
-                                }
-                                _ => return Err(ParseError::TypeMismatch),
-                            }
-                        }
-                        t => return Err(ParseError::Unexpected(t, Token::Branch)),
-                    }
-                }
+                Token::Comma => self.parse_comma(vec)?,
                 _ => (),
             }
+        }
+    }
+
+    fn parse_comma(&mut self, vec: &mut Vec<Flavor>) -> Result<(), ParseError> {
+        if vec.is_empty() {
+            return Err(ParseError::Unexpected(Token::Comma, Token::Flavor));
+        }
+        match self.next_token()? {
+            Token::Branch => {
+                let mut f = vec.pop().unwrap();
+                match self.next_token()? {
+                    Token::Str(s) => {
+                        f.branch = s;
+                        vec.push(f);
+                        return Ok(());
+                    }
+                    _ => return Err(ParseError::TypeMismatch),
+                }
+            }
+            t => return Err(ParseError::Unexpected(t, Token::Branch)),
         }
     }
 }
