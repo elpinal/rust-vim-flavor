@@ -142,6 +142,7 @@ pub enum ParseError {
     Terminate,
     EOF,
     TypeMismatch,
+    Unexpected(Token, Token), // got and want
 }
 
 impl ParseError {
@@ -160,6 +161,9 @@ impl fmt::Display for ParseError {
             ParseError::Terminate => write!(f, "unexpected termination of string literal"),
             ParseError::EOF => write!(f, "unexpected eof"),
             ParseError::TypeMismatch => write!(f, "type mismatch"),
+            ParseError::Unexpected(ref got, ref want) => {
+                write!(f, "unexpected {:?}; want {:?}", got, want)
+            }
         }
     }
 }
@@ -171,6 +175,7 @@ impl Error for ParseError {
             ParseError::Terminate => "unexpected termination of string literal",
             ParseError::EOF => "unexpected end of file",
             ParseError::TypeMismatch => "type mismatch",
+            ParseError::Unexpected(..) => "unexpected token appeared",
         }
     }
 
@@ -180,6 +185,7 @@ impl Error for ParseError {
             ParseError::Terminate => None,
             ParseError::EOF => None,
             ParseError::TypeMismatch => None,
+            ParseError::Unexpected(..) => None,
         }
     }
 }
