@@ -7,5 +7,4 @@ authors = ["elpinal <elpinal@users.noreply.github.com>"]
 
 [[bin]]
 name = "vim-flavor"
-path = "src/bin/main.rs"
 doc = false
