@@ -1,6 +1,7 @@
 #![allow(unused)]
 
 use std::num;
+use std::str::FromStr;
 
 #[derive(Debug, PartialEq)]
 struct Version {
@@ -13,8 +14,12 @@ impl Version {
     fn new(l: usize, m: usize, n: usize) -> Version {
         Version { l, m, n }
     }
+}
 
-    fn from_str(s: &str) -> Result<Version, FromStrError> {
+impl FromStr for Version {
+    type Err = FromStrError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         let v: Vec<&str> = s.split('.').collect();
         if v.len() != 3 {
             return Err(FromStrError::Split3);
