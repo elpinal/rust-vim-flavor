@@ -58,6 +58,9 @@ fn with_cmd(cmd: &str, args: env::Args) -> Result<()> {
 }
 
 fn no_cmd(cmd: &str) -> Result<()> {
+    if cmd.bytes().next() == Some(b'-') {
+        return Err(CLIError::NoFlag(cmd.to_owned()));
+    }
     Err(CLIError::NoCommand(cmd.to_owned()))
 }
 
