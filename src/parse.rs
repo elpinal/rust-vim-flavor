@@ -327,15 +327,7 @@ mod tests {
         let s = "# comment of flavor file\n\
                  flavor 'repo'";
         let mut p = Parser::new(s);
-        assert_eq!(
-            p.parse(),
-            Ok(vec![
-                Flavor {
-                    repo: "repo".to_owned(),
-                    branch: "master".to_owned(),
-                },
-            ])
-        );
+        assert_eq!(p.parse(), Ok(vec![Flavor::new("repo")]));
         assert_eq!(p.offset, s.len() + 1);
 
         let s = "flavor flavor";
