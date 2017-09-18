@@ -165,7 +165,7 @@ pub enum Token {
 #[derive(Debug, PartialEq)]
 pub struct Flavor {
     pub repo: String,
-    branch: String,
+    pub branch: String,
 }
 
 #[derive(Debug, PartialEq)]
