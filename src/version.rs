@@ -57,5 +57,14 @@ mod tests {
 
         // str's parse method verison.
         assert_eq!("3.21.0".parse().ok(), Some(Version { l: 3, m: 21, n: 0 }));
+
+        assert!("".parse::<Version>().is_err());
+        assert!("3210".parse::<Version>().is_err());
+        assert!("3.210".parse::<Version>().is_err());
+        assert!("3.2.1.0".parse::<Version>().is_err());
+
+        assert!("3.-2.1".parse::<Version>().is_err());
+        assert!("3.-.1".parse::<Version>().is_err());
+        assert!("3.a.1".parse::<Version>().is_err());
     }
 }
