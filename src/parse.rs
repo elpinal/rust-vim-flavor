@@ -104,12 +104,7 @@ impl<'a> Parser<'a> {
         loop {
             match self.next_token()? {
                 Token::Hash => self.skip_to_next_line(),
-                Token::Flavor => {
-                    vec.push(Flavor {
-                        repo: self.parse_str()?,
-                        branch: "master".to_owned(),
-                    })
-                }
+                Token::Flavor => vec.push(Flavor::new(&self.parse_str()?)),
                 Token::Comma => self.parse_attrs(vec)?,
                 t => return Err(ParseError::Unexpected(t, Token::Flavor)),
             }
