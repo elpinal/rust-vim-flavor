@@ -52,11 +52,11 @@ mod tests {
     fn test_from_str() {
         assert_eq!(
             Version::from_str("3.21.0").ok(),
-            Some(Version { l: 3, m: 21, n: 0 })
+            Some(Version::new(3, 21, 0))
         );
 
         // str's parse method verison.
-        assert_eq!("3.21.0".parse().ok(), Some(Version { l: 3, m: 21, n: 0 }));
+        assert_eq!("3.21.0".parse().ok(), Some(Version::new(3, 21, 0)));
 
         assert!("".parse::<Version>().is_err());
         assert!("3210".parse::<Version>().is_err());
