@@ -1,6 +1,6 @@
 #![allow(unused)]
 
-use std::num;
+use std::num::ParseIntError;
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
@@ -30,11 +30,11 @@ impl FromStr for Version {
 
 enum FromStrError {
     Split3,
-    Parse(num::ParseIntError),
+    Parse(ParseIntError),
 }
 
-impl From<num::ParseIntError> for FromStrError {
-    fn from(e: num::ParseIntError) -> FromStrError {
+impl From<ParseIntError> for FromStrError {
+    fn from(e: ParseIntError) -> FromStrError {
         FromStrError::Parse(e)
     }
 }
