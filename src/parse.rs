@@ -168,6 +168,15 @@ pub struct Flavor {
     pub branch: String,
 }
 
+impl Flavor {
+    fn new(repo: &str) -> Flavor {
+        Flavor {
+            repo: repo.to_owned(),
+            branch: "master".to_owned(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq)]
 pub enum ParseError {
     Utf8(Utf8Error),
