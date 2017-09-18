@@ -334,14 +334,14 @@ mod tests {
         let mut p = Parser::new(s);
         assert!(p.parse().is_err());
 
-        let s = "flavor 'repo', branch: 'master'";
+        let s = "flavor 'repo', branch: 'br'";
         let mut p = Parser::new(s);
         assert_eq!(
             p.parse(),
             Ok(vec![
                 Flavor {
                     repo: "repo".to_owned(),
-                    branch: "master".to_owned(),
+                    branch: "br".to_owned(),
                 },
             ])
         );
