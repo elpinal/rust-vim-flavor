@@ -3,7 +3,7 @@
 use std::num;
 use std::str::FromStr;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
 struct Version {
     l: usize,
     m: usize,
@@ -66,5 +66,13 @@ mod tests {
         assert!("3.-2.1".parse::<Version>().is_err());
         assert!("3.-.1".parse::<Version>().is_err());
         assert!("3.a.1".parse::<Version>().is_err());
+    }
+
+    #[test]
+    fn test_sort() {
+        let vec = vec![Version::new(1, 2, 3), Version::new(1, 12, 2)];
+        let mut s = vec.clone();
+        s.sort();
+        assert_eq!(s, vec);
     }
 }
