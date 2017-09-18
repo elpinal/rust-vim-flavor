@@ -48,7 +48,7 @@ pub fn install(s: &str) -> Result<(), InstallError> {
         );
         let r = complete(&f.repo);
         let output = Command::new("git")
-            .args(&["clone", "--depth", "1", &r, dest])
+            .args(&["clone", "--depth", "1", "--branch", &f.branch, &r, dest])
             .output()?;
         if !output.status.success() {
             eprintln!(
