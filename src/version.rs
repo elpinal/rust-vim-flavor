@@ -42,4 +42,12 @@ mod tests {
     fn test_new() {
         assert_eq!(Version::new(1, 2, 3), Version { l: 1, m: 2, n: 3 });
     }
+
+    #[test]
+    fn test_from_str() {
+        assert_eq!(
+            Version::from_str("3.21.0").ok(),
+            Some(Version { l: 3, m: 21, n: 0 })
+        );
+    }
 }
