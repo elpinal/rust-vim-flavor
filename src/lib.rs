@@ -5,7 +5,7 @@
 
 mod parse;
 
-use parse::{Parser, ParseError};
+use parse::{Flavor, Parser, ParseError};
 
 use std::env;
 use std::error::Error;
@@ -65,10 +65,10 @@ pub fn install(s: &str) -> Result<(), InstallError> {
 
 /// Parses content of the flavor file and updates plugins which are described in it.
 pub fn update(s: &str) -> Result<(), InstallError> {
-    git_with_flavor(s, false, &["pull"])
+    git_with_flavor(s, false, |f| vec!["pull", "origin", &f.branch])
 }
 
-fn git_with_flavor(s: &str, not: bool, args: &[&str]) -> Result<(), InstallError> {
+fn git_with_flavor(s: &str, not: bool, args: fn(&Flavor) -> Vec<&str>) -> Result<(), InstallError> {
     let root = get_root().ok_or(InstallError::GetHome)?;
     for f in Parser::new(s).parse()? {
         let n = f.repo.replace(is_invalid, "_");
@@ -80,7 +80,10 @@ fn git_with_flavor(s: &str, not: bool, args: &[&str]) -> Result<(), InstallError
         let dest = d.to_str().expect(
             "failed to build destination path for 'git pull'",
         );
-        let output = Command::new("git").current_dir(dest).args(args).output()?;
+        let output = Command::new("git")
+            .current_dir(dest)
+            .args(args(&f))
+            .output()?;
         if !output.status.success() {
             eprintln!("{}:", f.repo);
             eprintln!("{}", String::from_utf8_lossy(&output.stderr));
