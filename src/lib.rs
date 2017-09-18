@@ -4,6 +4,7 @@
 #![feature(slice_patterns)]
 
 mod parse;
+mod version;
 
 use parse::{Flavor, Parser, ParseError};
 
