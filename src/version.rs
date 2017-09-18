@@ -54,5 +54,8 @@ mod tests {
             Version::from_str("3.21.0").ok(),
             Some(Version { l: 3, m: 21, n: 0 })
         );
+
+        // str's parse method verison.
+        assert_eq!("3.21.0".parse().ok(), Some(Version { l: 3, m: 21, n: 0 }));
     }
 }
