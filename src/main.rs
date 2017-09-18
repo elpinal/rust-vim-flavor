@@ -115,6 +115,7 @@ enum CLIError {
     Install(vim_flavor::InstallError),
     NoCommand(String),
     NoTopic(String),
+    NoFlag(String),
 }
 
 impl fmt::Display for CLIError {
@@ -132,6 +133,7 @@ impl fmt::Display for CLIError {
                 )
             }
             CLIError::NoTopic(ref name) => write!(f, "no such help topic: {}", name),
+            CLIError::NoFlag(ref name) => write!(f, "no such flag: {}", name),
         }
     }
 }
@@ -144,6 +146,7 @@ impl Error for CLIError {
             CLIError::Install(ref e) => e.description(),
             CLIError::NoCommand(_) => "no such command",
             CLIError::NoTopic(_) => "no such help topic",
+            CLIError::NoFlag(_) => "no such flag",
         }
     }
 
@@ -154,6 +157,7 @@ impl Error for CLIError {
             CLIError::Install(ref e) => e.cause(),
             CLIError::NoCommand(_) => None,
             CLIError::NoTopic(_) => None,
+            CLIError::NoFlag(_) => None,
         }
     }
 }
