@@ -107,7 +107,7 @@ impl<'a> Parser<'a> {
                 Token::Flavor => {
                     vec.push(Flavor {
                         repo: self.parse_str()?,
-                        branch: String::new(),
+                        branch: "master".to_owned(),
                     })
                 }
                 Token::Comma => self.parse_attrs(vec)?,
@@ -328,7 +328,7 @@ mod tests {
             Ok(vec![
                 Flavor {
                     repo: "repo".to_owned(),
-                    branch: String::new(),
+                    branch: "master".to_owned(),
                 },
             ])
         );
