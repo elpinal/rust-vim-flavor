@@ -39,8 +39,8 @@ fn is_invalid(ch: char) -> bool {
 }
 
 /// Parses content of the flavor file and installs plugins which are described in it.
-pub fn install(s: &str, root: &Path) -> Result<(), InstallError> {
-    for f in Parser::new(s).parse()? {
+pub fn install(fs: &[Flavor], root: &Path) -> Result<(), InstallError> {
+    for f in fs {
         let n = f.repo.replace(is_invalid, "_");
         let d = root.join(n);
         if d.exists() {
@@ -190,7 +190,7 @@ mod tests {
     fn test_install() {
         let mut dir = env::temp_dir();
         dir.push("rust-vim-flavor-install-test");
-        let r = install("flavor 'vspec'", &dir);
+        let r = install(&[Flavor::new("vspec")], &dir);
         assert!(dir.join("vspec").join(".git").exists());
         if let Some(e) = remove_dir_all(dir).err() {
             eprintln!("cannot remove a temporary directory: {}", e);

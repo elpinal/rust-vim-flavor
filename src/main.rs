@@ -96,7 +96,7 @@ fn install(mut args: env::Args) -> Result<()> {
     let mut buffer = String::new();
     f.read_to_string(&mut buffer)?;
     let root = vim_flavor::get_root().unwrap();
-    vim_flavor::install(&buffer, &root)?;
+    vim_flavor::install(&vim_flavor::Parser::new(&buffer).parse()?, &root)?;
     Ok(())
 }
 
@@ -175,5 +175,11 @@ impl From<io::Error> for CLIError {
 impl From<vim_flavor::InstallError> for CLIError {
     fn from(e: vim_flavor::InstallError) -> CLIError {
         CLIError::Install(e)
+    }
+}
+
+impl From<vim_flavor::ParseError> for CLIError {
+    fn from(e: vim_flavor::ParseError) -> CLIError {
+        CLIError::from(vim_flavor::InstallError::from(e))
     }
 }
