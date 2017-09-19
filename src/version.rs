@@ -1,5 +1,6 @@
 #![allow(unused)]
 
+use std::fmt;
 use std::num::ParseIntError;
 use std::str::FromStr;
 
@@ -31,6 +32,17 @@ impl FromStr for Version {
 enum FromStrError {
     Split3,
     Parse(ParseIntError),
+}
+
+impl fmt::Display for FromStrError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            FromStrError::Split3 => {
+                write!(f, "string does not consist of three numbers split by dots")
+            }
+            FromStrError::Parse(ref e) => e.fmt(f),
+        }
+    }
 }
 
 impl From<ParseIntError> for FromStrError {
