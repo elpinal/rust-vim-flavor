@@ -102,8 +102,6 @@ fn git_with_flavor(
 #[derive(Debug)]
 /// Represents an error while installing plugins.
 pub enum InstallError {
-    /// Cannot get the home directory.
-    GetHome,
     /// Error when executing the 'git' command.
     IO(io::Error),
     /// Given Flavor file cannot be parsed successfully.
@@ -115,7 +113,6 @@ pub enum InstallError {
 impl fmt::Display for InstallError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            InstallError::GetHome => write!(f, "error while getting home path"),
             InstallError::IO(ref e) => write!(f, "IO error: {}", e),
             InstallError::Parse(ref e) => write!(f, "parse error: {}", e),
             InstallError::Exit(status) => status.fmt(f),
@@ -126,7 +123,6 @@ impl fmt::Display for InstallError {
 impl Error for InstallError {
     fn description(&self) -> &str {
         match *self {
-            InstallError::GetHome => "error while getting home path",
             InstallError::IO(ref e) => e.description(),
             InstallError::Parse(ref e) => e.description(),
             InstallError::Exit(_) => "command exited",
@@ -135,7 +131,6 @@ impl Error for InstallError {
 
     fn cause(&self) -> Option<&Error> {
         match *self {
-            InstallError::GetHome => None,
             InstallError::IO(ref e) => e.cause(),
             InstallError::Parse(ref e) => e.cause(),
             InstallError::Exit(_) => None,

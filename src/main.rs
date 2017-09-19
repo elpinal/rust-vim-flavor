@@ -97,7 +97,7 @@ fn install(mut args: env::Args) -> Result<()> {
     let mut f = File::open(name)?;
     let mut buffer = String::new();
     f.read_to_string(&mut buffer)?;
-    let root = get_root().unwrap();
+    let root = get_root().ok_or(CLIError::GetHome)?;
     vim_flavor::install(&Parser::new(&buffer).parse()?, &root)?;
     Ok(())
 }
@@ -110,7 +110,7 @@ fn update(mut args: env::Args) -> Result<()> {
     let mut f = File::open(name)?;
     let mut buffer = String::new();
     f.read_to_string(&mut buffer)?;
-    let root = get_root().unwrap();
+    let root = get_root().ok_or(CLIError::GetHome)?;
     vim_flavor::update(&Parser::new(&buffer).parse()?, &root)?;
     Ok(())
 }
@@ -118,6 +118,7 @@ fn update(mut args: env::Args) -> Result<()> {
 #[derive(Debug)]
 enum CLIError {
     TooManyArguments,
+    GetHome,
     IO(io::Error),
     Install(InstallError),
     NoCommand(String),
@@ -129,6 +130,7 @@ impl fmt::Display for CLIError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             CLIError::TooManyArguments => write!(f, "too many arguments given"),
+            CLIError::GetHome => write!(f, "error while getting home path"),
             CLIError::IO(ref e) => write!(f, "IO error: {}", e),
             CLIError::Install(ref e) => write!(f, "{}", e),
             CLIError::NoCommand(ref name) => {
@@ -149,6 +151,7 @@ impl Error for CLIError {
     fn description(&self) -> &str {
         match *self {
             CLIError::TooManyArguments => "too many arguments given",
+            CLIError::GetHome => "error while getting home path",
             CLIError::IO(ref e) => e.description(),
             CLIError::Install(ref e) => e.description(),
             CLIError::NoCommand(_) => "no such command",
@@ -160,6 +163,7 @@ impl Error for CLIError {
     fn cause(&self) -> Option<&Error> {
         match *self {
             CLIError::TooManyArguments => None,
+            CLIError::GetHome => None,
             CLIError::IO(ref e) => e.cause(),
             CLIError::Install(ref e) => e.cause(),
             CLIError::NoCommand(_) => None,
