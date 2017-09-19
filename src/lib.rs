@@ -196,4 +196,20 @@ mod tests {
         }
         assert!(r.is_ok());
     }
+
+    #[test]
+    fn test_update() {
+        let mut dir = env::temp_dir();
+        dir.push("rust-vim-flavor-update-test");
+
+        let r = install(&[Flavor::new("vspec")], &dir);
+        assert!(r.is_ok());
+
+        let r = update(&[Flavor::new("vspec")], &dir);
+        assert!(dir.join("vspec").join(".git").exists());
+        if let Some(e) = remove_dir_all(dir).err() {
+            eprintln!("cannot remove a temporary directory: {}", e);
+        }
+        assert!(r.is_ok());
+    }
 }
