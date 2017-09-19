@@ -15,6 +15,9 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitStatus};
 
+/// gets default root directory.
+/// When succeeded in obtaining the home direcotry, returns `$HOME/.vim/rflavors`.
+/// Otherwise, returns None.
 pub fn get_root() -> Option<PathBuf> {
     env::home_dir().map(|mut p| {
         p.push(".vim");
