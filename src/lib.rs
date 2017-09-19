@@ -67,16 +67,16 @@ pub fn install(fs: &[Flavor], root: &Path) -> Result<(), InstallError> {
 }
 
 /// Parses content of the flavor file and updates plugins which are described in it.
-pub fn update(fs: &[Flavor]) -> Result<(), InstallError> {
-    git_with_flavor(fs, false, |f| vec!["pull", "origin", &f.branch])
+pub fn update(fs: &[Flavor], root: &Path) -> Result<(), InstallError> {
+    git_with_flavor(fs, root, false, |f| vec!["pull", "origin", &f.branch])
 }
 
 fn git_with_flavor(
     fs: &[Flavor],
+    root: &Path,
     not: bool,
     args: fn(&Flavor) -> Vec<&str>,
 ) -> Result<(), InstallError> {
-    let root = get_root().ok_or(InstallError::GetHome)?;
     for f in fs {
         let n = f.repo.replace(is_invalid, "_");
         let d = root.join(n);
