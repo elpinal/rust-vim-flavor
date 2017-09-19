@@ -12,10 +12,10 @@ use std::env;
 use std::error::Error;
 use std::fmt;
 use std::io;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::{Command, ExitStatus};
 
-fn get_root() -> Option<PathBuf> {
+pub fn get_root() -> Option<PathBuf> {
     env::home_dir().map(|mut p| {
         p.push(".vim");
         p.push("rflavors");
@@ -36,8 +36,7 @@ fn is_invalid(ch: char) -> bool {
 }
 
 /// Parses content of the flavor file and installs plugins which are described in it.
-pub fn install(s: &str) -> Result<(), InstallError> {
-    let root = get_root().ok_or(InstallError::GetHome)?;
+pub fn install(s: &str, root: &Path) -> Result<(), InstallError> {
     for f in Parser::new(s).parse()? {
         let n = f.repo.replace(is_invalid, "_");
         let d = root.join(n);

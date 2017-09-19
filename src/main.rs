@@ -95,7 +95,8 @@ fn install(mut args: env::Args) -> Result<()> {
     let mut f = File::open(name)?;
     let mut buffer = String::new();
     f.read_to_string(&mut buffer)?;
-    vim_flavor::install(&buffer)?;
+    let root = vim_flavor::get_root().unwrap();
+    vim_flavor::install(&buffer, &root)?;
     Ok(())
 }
 
