@@ -6,7 +6,7 @@
 mod parse;
 mod version;
 
-use parse::{Flavor, Parser, ParseError};
+pub use parse::{Flavor, Parser, ParseError};
 
 use std::env;
 use std::error::Error;

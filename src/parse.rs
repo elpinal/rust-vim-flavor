@@ -13,6 +13,7 @@ pub struct Parser<'a> {
 }
 
 impl<'a> Parser<'a> {
+    /// Creates a new `Parser` containing `buffer`.
     pub fn new(buffer: &str) -> Parser {
         let mut bytes = buffer.bytes().enumerate();
         let byte = bytes.next().map(|(_, b)| b);
@@ -90,6 +91,7 @@ impl<'a> Parser<'a> {
         Ok(String::from_utf8(vec).map(Token::Str)?)
     }
 
+    /// Parses its buffer and returns a corresponding `Flavor`.
     pub fn parse(&mut self) -> Result<Vec<Flavor>, ParseError> {
         let mut vec = Vec::new();
         self.parse1(&mut vec).or_else(|e| if e.is_eof_error() {
@@ -158,8 +160,11 @@ pub enum Token {
 }
 
 #[derive(Debug, PartialEq)]
+/// Represents a plugin declaration.
 pub struct Flavor {
+    /// A repository URI.
     pub repo: String,
+    /// A branch for the plugin.
     pub branch: String,
 }
 
@@ -173,11 +178,17 @@ impl Flavor {
 }
 
 #[derive(Debug, PartialEq)]
+/// An error while parsing Flavor declarations.
 pub enum ParseError {
+    /// Wraps `Utf8Error`.
     Utf8(Utf8Error),
+    /// String literal does not terminate.
     Terminate,
+    /// Unexpected end of file.
     EOF,
+    /// Type mismatch.
     TypeMismatch,
+    /// Unexpected `Token`, but want `Token`.
     Unexpected(Token, Token), // got and want
 }
 
