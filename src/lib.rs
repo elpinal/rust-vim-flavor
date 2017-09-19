@@ -154,6 +154,7 @@ impl From<io::Error> for InstallError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::fs::remove_dir_all;
 
     #[test]
     fn test_complete() {
@@ -183,5 +184,16 @@ mod tests {
         assert!(is_invalid('~'));
         assert!(is_invalid(' '));
         assert!(is_invalid(','));
+    }
+
+    #[test]
+    fn test_install() {
+        let mut dir = env::temp_dir();
+        dir.push("rust-vim-flavor-install-test");
+        let r = install("flavor 'vspec'", &dir);
+        if let Some(e) = remove_dir_all(dir).err() {
+            eprintln!("cannot remove a temporary directory: {}", e);
+        }
+        assert!(r.is_ok());
     }
 }
