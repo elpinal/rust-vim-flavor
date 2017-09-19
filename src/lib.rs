@@ -211,9 +211,12 @@ mod tests {
 
         let r = update(&[Flavor::new("vspec")], &dir);
         assert!(dir.join("vspec").join(".git").exists());
+        assert!(r.is_ok());
+
+        let r = update(&[Flavor::new("plugin/is/not/installed/yet")], &dir);
         if let Some(e) = remove_dir_all(dir).err() {
             eprintln!("cannot remove a temporary directory: {}", e);
         }
-        assert!(r.is_ok());
+        assert!(r.is_ok()); // ok.
     }
 }
