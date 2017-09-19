@@ -1,6 +1,6 @@
 extern crate vim_flavor;
 
-use vim_flavor::{InstallError, Parser, ParseError, get_root};
+use vim_flavor::{Flavor, InstallError, Parser, ParseError, get_root};
 
 use std::env;
 use std::error::Error;
@@ -8,6 +8,7 @@ use std::fmt;
 use std::fs::File;
 use std::io;
 use std::io::Read;
+use std::path::Path;
 
 fn main() {
     std::process::exit(run().unwrap_or_else(|e| {
@@ -89,20 +90,18 @@ fn with_topic(name: &str) -> Result<()> {
     Ok(())
 }
 
-fn install(mut args: env::Args) -> Result<()> {
-    if args.next().is_some() {
-        return Err(CLIError::TooManyArguments);
-    }
-    let name = "VimFlavor";
-    let mut f = File::open(name)?;
-    let mut buffer = String::new();
-    f.read_to_string(&mut buffer)?;
-    let root = get_root().ok_or(CLIError::GetHome)?;
-    vim_flavor::install(&Parser::new(&buffer).parse()?, &root)?;
-    Ok(())
+fn install(args: env::Args) -> Result<()> {
+    with_flavor_file(args, vim_flavor::install)
 }
 
-fn update(mut args: env::Args) -> Result<()> {
+fn update(args: env::Args) -> Result<()> {
+    with_flavor_file(args, vim_flavor::update)
+}
+
+fn with_flavor_file(
+    mut args: env::Args,
+    fun: fn(&[Flavor], &Path) -> std::result::Result<(), InstallError>,
+) -> Result<()> {
     if args.next().is_some() {
         return Err(CLIError::TooManyArguments);
     }
@@ -111,7 +110,7 @@ fn update(mut args: env::Args) -> Result<()> {
     let mut buffer = String::new();
     f.read_to_string(&mut buffer)?;
     let root = get_root().ok_or(CLIError::GetHome)?;
-    vim_flavor::update(&Parser::new(&buffer).parse()?, &root)?;
+    fun(&Parser::new(&buffer).parse()?, &root)?;
     Ok(())
 }
 
