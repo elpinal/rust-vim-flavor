@@ -1,5 +1,7 @@
 extern crate vim_flavor;
 
+use vim_flavor::{InstallError, Parser, ParseError, get_root};
+
 use std::env;
 use std::error::Error;
 use std::fmt;
@@ -95,8 +97,8 @@ fn install(mut args: env::Args) -> Result<()> {
     let mut f = File::open(name)?;
     let mut buffer = String::new();
     f.read_to_string(&mut buffer)?;
-    let root = vim_flavor::get_root().unwrap();
-    vim_flavor::install(&vim_flavor::Parser::new(&buffer).parse()?, &root)?;
+    let root = get_root().unwrap();
+    vim_flavor::install(&Parser::new(&buffer).parse()?, &root)?;
     Ok(())
 }
 
@@ -116,7 +118,7 @@ fn update(mut args: env::Args) -> Result<()> {
 enum CLIError {
     TooManyArguments,
     IO(io::Error),
-    Install(vim_flavor::InstallError),
+    Install(InstallError),
     NoCommand(String),
     NoTopic(String),
     NoFlag(String),
@@ -172,14 +174,14 @@ impl From<io::Error> for CLIError {
     }
 }
 
-impl From<vim_flavor::InstallError> for CLIError {
-    fn from(e: vim_flavor::InstallError) -> CLIError {
+impl From<InstallError> for CLIError {
+    fn from(e: InstallError) -> CLIError {
         CLIError::Install(e)
     }
 }
 
-impl From<vim_flavor::ParseError> for CLIError {
-    fn from(e: vim_flavor::ParseError) -> CLIError {
-        CLIError::from(vim_flavor::InstallError::from(e))
+impl From<ParseError> for CLIError {
+    fn from(e: ParseError) -> CLIError {
+        CLIError::from(InstallError::from(e))
     }
 }
