@@ -110,7 +110,7 @@ fn update(mut args: env::Args) -> Result<()> {
     let mut f = File::open(name)?;
     let mut buffer = String::new();
     f.read_to_string(&mut buffer)?;
-    vim_flavor::update(&buffer)?;
+    vim_flavor::update(&Parser::new(&buffer).parse()?)?;
     Ok(())
 }
 
