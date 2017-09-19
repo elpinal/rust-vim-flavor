@@ -169,7 +169,8 @@ pub struct Flavor {
 }
 
 impl Flavor {
-    fn new(repo: &str) -> Flavor {
+    /// Creates a new `Flavor` containing `repo` as the URI for the plugin.
+    pub fn new(repo: &str) -> Flavor {
         Flavor {
             repo: repo.to_owned(),
             branch: "master".to_owned(),
