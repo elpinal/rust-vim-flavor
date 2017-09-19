@@ -1,5 +1,6 @@
 #![allow(unused)]
 
+use std::error::Error;
 use std::fmt;
 use std::num::ParseIntError;
 use std::str::FromStr;
@@ -29,6 +30,7 @@ impl FromStr for Version {
     }
 }
 
+#[derive(Debug)]
 enum FromStrError {
     Split3,
     Parse(ParseIntError),
@@ -41,6 +43,22 @@ impl fmt::Display for FromStrError {
                 write!(f, "string does not consist of three numbers split by dots")
             }
             FromStrError::Parse(ref e) => e.fmt(f),
+        }
+    }
+}
+
+impl Error for FromStrError {
+    fn description(&self) -> &str {
+        match *self {
+            FromStrError::Split3 => "string does not consist of three numbers split by dots",
+            FromStrError::Parse(ref e) => e.description(),
+        }
+    }
+
+    fn cause(&self) -> Option<&Error> {
+        match *self {
+            FromStrError::Split3 => None,
+            FromStrError::Parse(ref e) => e.cause(),
         }
     }
 }
