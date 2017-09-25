@@ -3,6 +3,7 @@
 use std::error::Error;
 use std::fmt;
 use std::num::ParseIntError;
+use std::ops::Range;
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
@@ -15,6 +16,16 @@ struct Version {
 impl Version {
     fn new(l: usize, m: usize, n: usize) -> Version {
         Version { l, m, n }
+    }
+
+    fn pessimistic(&self) -> Range<Version> {
+        let end = Version {
+            m: self.m + 1,
+            n: 0,
+            ..*self
+        };
+        let start = self.clone();
+        start..end
     }
 }
 
@@ -104,5 +115,11 @@ mod tests {
         let mut s = vec.clone();
         s.sort();
         assert_eq!(s, vec);
+    }
+
+    #[test]
+    fn test_pessimistic() {
+        let v = Version::new(3, 0, 3);
+        assert_eq!(v.pessimistic(), v..Version::new(3, 1, 0));
     }
 }
